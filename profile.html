@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+
+<!-- Makes layout responsive on all devices -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Gas Profile - {{username}}</title>
+
+<style>
+    /* ===== GLOBAL ===== */
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-color: #bfe9f5;
+    }
+
+    /* ===== PAGE WRAPPER ===== */
+    .container {
+        max-width: 480px;
+        margin: 0 auto;
+        padding: 15px;
+        width: 100%;
+    }
+
+    /* ===== HEADER ===== */
+    .header {
+        position: sticky;
+        top: 0;
+        background-color: #bfe9f5;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        z-index: 10;
+    }
+
+    .icon {
+        font-size: 24px;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    /* ===== PROFILE ===== */
+    .profile {
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    .avatar {
+        width: 28vw;
+        max-width: 120px;
+        height: 28vw;
+        max-height: 120px;
+        border-radius: 50%;
+        background-color: #ddd;
+        margin: auto;
+    }
+
+    .username {
+        font-size: 1.4rem;
+        font-weight: bold;
+        margin-top: 8px;
+    }
+
+    .edit-btn {
+        margin-top: 6px;
+        padding: 8px 22px;
+        background-color: #5bbcd6;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    /* ===== GAS CARD ===== */
+    .gas-card {
+        background-color: white;
+        border-radius: 14px;
+        padding: 12px;
+        margin-top: 15px;
+        display: flex;
+        gap: 12px;
+        width: 100%;
+    }
+
+    /* ===== GAS BOTTLE ===== */
+    .gas-bottle {
+        width: 22vw;
+        max-width: 95px;
+        height: 34vw;
+        max-height: 150px;
+        border-radius: 22px 22px 14px 14px;
+        position: relative;
+        color: white;
+        font-weight: bold;
+        text-align: center;
+        flex-shrink: 0;
+    }
+
+    .gas-bottle::before {
+        content: "";
+        width: 40%;
+        height: 10%;
+        background-color: #444;
+        position: absolute;
+        top: -10%;
+        left: 30%;
+        border-radius: 4px;
+    }
+
+    .gas-name {
+        position: absolute;
+        bottom: 10%;
+        width: 100%;
+        font-size: 0.8rem;
+    }
+
+    /* ===== BRAND COLORS ===== */
+    .camgaz { background-color: #1f9e90; }
+    .bocom  { background-color: #2fb34a; }
+    .tradex { background-color: #1e5aa8; }
+    .total  { background-color: #e03b3b; }
+
+    /* ===== INFO BOXES ===== */
+    .details {
+        flex: 1;
+        display: grid;
+        gap: 6px;
+    }
+
+    .info-box {
+        background-color: #f2f2f2;
+        padding: 6px 8px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+    }
+
+    .price-box {
+        font-weight: bold;
+    }
+
+    .stock {
+        color: green;
+    }
+
+    .out {
+        color: red;
+    }
+
+    /* ===== LARGE SCREENS ===== */
+    @media (min-width: 768px) {
+        .container {
+            max-width: 700px;
+        }
+
+        .gas-card {
+            padding: 16px;
+        }
+    }
+</style>
+</head>
+
+<body>
+<div class="container">
+
+    <!-- ===== HEADER ===== -->
+    <div class="header">
+        <div class="icon" aria-label="Back">←</div>
+        <div class="icon" aria-label="Settings">⚙</div>
+    </div>
+
+    <!-- ===== PROFILE ===== -->
+    <div class="profile">
+        <div class="avatar"></div>
+        <div class="username">{{username}}</div>
+        <button class="edit-btn">Edit</button>
+    </div>
+
+    <!-- ===== GAS CARDS (DB-DRIVEN) ===== -->
+
+    <!-- CARD TEMPLATE -->
+    <div class="gas-card">
+        <div class="gas-bottle camgaz">
+            <div class="gas-name">{{gas_brand}}</div>
+        </div>
+        <div class="details">
+            <div class="info-box">Available: {{available}}</div>
+            <div class="info-box">Quarter: {{quarter}}</div>
+            <div class="info-box price-box">Price: {{price}} CFA</div>
+            <div class="info-box {{stock_class}}">{{stock_status}}</div>
+        </div>
+    </div>
+    <div class="gas-card">
+        <div class="gas-bottle camgaz">
+            <div class="gas-name">{{gas_brand}}</div>
+        </div>
+        <div class="details">
+            <div class="info-box">Available: {{available}}</div>
+            <div class="info-box">Quarter: {{quarter}}</div>
+            <div class="info-box price-box">Price: {{price}} CFA</div>
+            <div class="info-box {{stock_class}}">{{stock_status}}</div>
+        </div>
+    </div>
+    <div class="gas-card">
+        <div class="gas-bottle camgaz">
+            <div class="gas-name">{{gas_brand}}</div>
+        </div>
+        <div class="details">
+            <div class="info-box">Available: {{available}}</div>
+            <div class="info-box">Quarter: {{quarter}}</div>
+            <div class="info-box price-box">Price: {{price}} CFA</div>
+            <div class="info-box {{stock_class}}">{{stock_status}}</div>
+        </div>
+    </div>
+    <div class="gas-card">
+        <div class="gas-bottle camgaz">
+            <div class="gas-name">{{gas_brand}}</div>
+        </div>
+        <div class="details">
+            <div class="info-box">Available: {{available}}</div>
+            <div class="info-box">Quarter: {{quarter}}</div>
+            <div class="info-box price-box">Price: {{price}} CFA</div>
+            <div class="info-box {{stock_class}}">{{stock_status}}</div>
+        </div>
+    </div>
+    <div class="gas-card">
+        <div class="gas-bottle camgaz">
+            <div class="gas-name">{{gas_brand}}</div>
+        </div>
+        <div class="details">
+            <div class="info-box">Available: {{available}}</div>
+            <div class="info-box">Quarter: {{quarter}}</div>
+            <div class="info-box price-box">Price: {{price}} CFA</div>
+            <div class="info-box {{stock_class}}">{{stock_status}}</div>
+        </div>
+    </div>
+    <div class="gas-card">
+        <div class="gas-bottle camgaz">
+            <div class="gas-name">{{gas_brand}}</div>
+        </div>
+        <div class="details">
+            <div class="info-box">Available: {{available}}</div>
+            <div class="info-box">Quarter: {{quarter}}</div>
+            <div class="info-box price-box">Price: {{price}} CFA</div>
+            <div class="info-box {{stock_class}}">{{stock_status}}</div>
+        </div>
+    </div>
+    <div class="gas-card">
+        <div class="gas-bottle camgaz">
+            <div class="gas-name">{{gas_brand}}</div>
+        </div>
+        <div class="details">
+            <div class="info-box">Available: {{available}}</div>
+            <div class="info-box">Quarter: {{quarter}}</div>
+            <div class="info-box price-box">Price: {{price}} CFA</div>
+            <div class="info-box {{stock_class}}">{{stock_status}}</div>
+        </div>
+    </div>
+    <div class="gas-card">
+        <div class="gas-bottle camgaz">
+            <div class="gas-name">{{gas_brand}}</div>
+        </div>
+        <div class="details">
+            <div class="info-box">Available: {{available}}</div>
+            <div class="info-box">Quarter: {{quarter}}</div>
+            <div class="info-box price-box">Price: {{price}} CFA</div>
+            <div class="info-box {{stock_class}}">{{stock_status}}</div>
+        </div>
+    </div>
+    <div class="gas-card">
+        <div class="gas-bottle camgaz">
+            <div class="gas-name">{{gas_brand}}</div>
+        </div>
+        <div class="details">
+            <div class="info-box">Available: {{available}}</div>
+            <div class="info-box">Quarter: {{quarter}}</div>
+            <div class="info-box price-box">Price: {{price}} CFA</div>
+            <div class="info-box {{stock_class}}">{{stock_status}}</div>
+        </div>
+    </div>
+
+    <!-- Repeat card dynamically from DB (total 9) -->
+
+</div>
+</body>
+</html>
