@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Settings</title>
+    <style>
+        body {
+            background-color: lightblue; /* keep original background */
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* BACK BUTTON */
+        .back {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            font-size: 20px;
+            text-decoration: none;
+            color: #1f4e79;
+            cursor: pointer;
+        }
+
+        .back:hover {
+            color: #0b2e4f;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 600px;
+            margin: 80px auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        h2 {
+            color: #1f4e79;
+            margin-bottom: 20px;
+        }
+
+        .setting-item {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #4a90e2;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        /* SAVE CHANGES BUTTON */
+        .save {
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        .save:hover {
+            background-color: #3570b0;
+        }
+
+        /* LOG OUT BUTTON */
+        .logout {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .logout:hover {
+            background-color: darkred;
+        }
+    </style>
+</head>
+<body>
+
+<a href="javascript:history.back()" class="back">⬅ </a>
+
+<div class="container">
+    <h2>Settings</h2>
+
+    <div class="setting-item">
+        <label>Username</label>
+        <input type="text" placeholder="Enter new username">
+    </div>
+
+    <div class="setting-item">
+        <label>Email</label>
+        <input type="email" placeholder="Enter new email">
+    </div>
+
+    <div class="setting-item">
+        <label>Password</label>
+        <input type="password" placeholder="Enter new password">
+    </div>
+
+    <!-- SAVE CHANGES BUTTON -->
+    <button class="save">Save Changes</button>
+
+    <!-- LOG OUT BUTTON -->
+    <button class="logout">Log Out</button>
+</div>
+
+</body>
+</html>
