@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" name="viewport ">
+    <title>About Us</title>
+     <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1.4;
+            margin: 0;
+            padding: 40px;
+            background-color: #19d5f7;
+            color: #333;
+            box-sizing: border-box;
+            font-size: clamp(16px, 1.8vw, 18px);
+        } 
+        .back-arrow {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            font-size: 26px;
+            color: #080808;
+            text-decoration: none;
+            z-index: 9999;
+        }
+    
+        h1 {
+            text-align: center;
+            color: #1e3a8a;
+            margin-bottom: 18px;
+            font-size: clamp(26px, 3vw, 32px);
+        }
+
+        h2, h3, h4, h5, h6, h7 {
+            color: #060707;
+            margin-bottom:2px;
+            font-size: clamp(20px, 2.5vw, 24px);
+        }
+
+        p {
+            text-align: justify;
+            width: 100%;
+            margin-top: 0;
+            margin-bottom: 6px;
+            font-size: clamp(16px, 1.8vw, 18px);
+        }
+        ul {
+            width: 100%;
+            padding-left: 20px;
+            margin: 8px;
+        }
+        li {
+            margin-bottom: 3px;
+            font-size: clamp(16px, 1.8vw, 18px);
+        }
+        a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        figure img {
+         width: 200px;           
+         height: 200px;
+         border-radius: 50%;
+         object-fit: cover;
+         filter: grayscale(100%);
+         transition: filter 0.3s ease,transform 0.3s ease;  
+        }
+        figure img:hover,
+        figure img:focus {
+         filter: grayscale(0%);
+         transform: scale(1.2);       
+         z-index: 10;                 
+         cursor: pointer;             
+        }
+        h7 {
+            display: block;
+            font-size: clamp(20px, 2.5vw, 24px);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>About Us</h1>
+
+    <p>
+        &nbsp; Our mission is to empower household managers, food service businesses—both small and large and
+        gas cylinder vendors with practical, efficient, and user-friendly solutions.
+    </p>
+
+    <h2>Our Story</h2>
+    <p>
+        &nbsp;&nbsp; Our journey began in a lecture hall, where we were grouped into teams of six and challenged to develop
+        an innovative solution. Inspired by the everyday struggles of our people, we identified a common 
+        problem—finding a specific gas cylinder often requires spending hours under the scorching sun or in 
+        cold rain, while carrying heavy metal bottles in search of refills.
+        This realization deeply moved us. Determined to make a difference, we decided to apply the skills we 
+        acquired at the ICT University of Yaoundé to develop a practical solution to this challenge.<br>
+         Thus, GAZIO was born.
+    </p>
+
+    <h3>Meet Luminas</h3>
+    <div style="display: flex; justify-content:center; gap: 20px; flex-wrap:wrap ;">
+        <figure style="text-align: center;">
+            <img src="{{LUM_AZINUI_IMAGE}}" alt="LUM">
+            <figcaption>
+                LUM AZINUI <br>
+                SCRUM MISTRESS
+            </figcaption>
+        </figure>
+
+        <figure style="text-align: center;">
+            <img src="{{BERI_NDAMNSA_IMAGE}}" alt="BERI">
+            <figcaption>
+                BERI NDAMNSA<br>
+                Chief Financial Officer(CFO)
+            </figcaption>
+        </figure> 
+
+        <figure style="text-align: center;">
+            <img src="{{DONGMO_SHILOH_IMAGE}}" alt="SHILOH">
+            <figcaption>
+                DONGMO SHILOH<br>
+                Product Owner
+            </figcaption>
+        </figure>
+    </div>
+
+    <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+        <figure style="text-align: center;">
+            <img src="{{ASANGWA_PROMISE_IMAGE}}" alt="PROMISE">
+            <figcaption>
+                ASANGWA PROMISE <br>
+                Software Developer
+            </figcaption>
+        </figure>
+
+        <figure style="text-align: center;">
+            <img src="{{ANEMBOM_CHELSEA_IMAGE}}" alt="CHELSEA">
+            <figcaption>
+                ANEMBOM CHELSEA<br>
+                Chief Technology Officer
+            </figcaption>
+        </figure>
+
+        <figure style="text-align: center;">
+            <img src="{{NAMBONG_CANELLE_IMAGE}}" alt="CANELLE">
+            <figcaption>
+                NAMBONG CANELLE<br>
+                Product Owner
+            </figcaption>
+        </figure>
+    </div>
+
+    <h4>What We Do</h4>
+    <p>
+        &nbsp;&nbsp; GAZIO acts as a bridge between gas cylinder vendors and buyers.
+        Users can search or browse for a specific gas cylinder type and instantly receive a list of available 
+        vendors closest to their location.
+        The platform allows users to reserve gas cylinders and contact vendors directly for additional information.
+        GAZIO serves as a centralized digital marketplace, enabling households and businesses to easily find 
+        verified gas vendors and purchase gas efficiently, safely, and conveniently.
+    </p>
+
+    <h5>Why Choose Us</h5>
+    <ul>
+        <li>Simple and user-friendly designs</li>
+        <li>Clean and responsive layouts</li>
+        <li>Customer-focused approach</li>
+        <li>Reliable support</li>
+    </ul>
+
+    <h6>Our Values</h6>
+    <p>
+        We uphold the values of integrity, creativity, and excellence in delivering solutions 
+        that create real value for our clients.
+    </p>
+
+    <h7>Contact Us</h7>
+    <p>
+        Interested in working with us?  
+        <a href="contact.html">Get in touch</a>.
+    </p>
+<a href="javascript:history.back()" class="back-arrow" aria-label="Go back">
+    &#8592;
+</a>
+<a href="/" class="back-arrow" aria-label="Go back"
+   onclick="event.preventDefault(); 
+            if (history.length > 1) { history.back(); } 
+            else { window.location.href = '/'; }">
+  &#8592;
+</a>
+
+</body>
+</html>
