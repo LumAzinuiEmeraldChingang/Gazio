@@ -89,8 +89,8 @@
         }
 
         .card img {
-            width: 150px;   /* bigger image */
-            height: 150px;
+            width: 120px;   /* adjust image size */
+            height: 120px;
             object-fit: cover;
             border-radius: 8px;
         }
@@ -158,7 +158,7 @@
 <div class="container">
     <!-- SELLER INFO PLACEHOLDERS -->
     <div class="seller-info">
-        <img src="profile.png" alt="Profile">
+        <img src="placeholder.png" alt="Profile">
         <div>
             <input type="text" placeholder="Seller Name">
             <input type="text" placeholder="Location">
@@ -170,7 +170,7 @@
 
     <div class="bottles">
 
-        <!-- GAS 1 PLACEHOLDER -->
+        <!-- GAS 1 -->
         <div class="card">
             <img src="placeholder.png" alt="Gas Bottle">
             <div class="card-info">
@@ -189,7 +189,7 @@
             </div>
         </div>
 
-        <!-- GAS 2 PLACEHOLDER -->
+        <!-- GAS 2 -->
         <div class="card">
             <img src="placeholder.png" alt="Gas Bottle">
             <div class="card-info">
@@ -208,7 +208,62 @@
             </div>
         </div>
 
-        <!-- You can duplicate cards for more gas bottles -->
+        <!-- GAS 3 -->
+        <div class="card">
+            <img src="placeholder.png" alt="Gas Bottle">
+            <div class="card-info">
+                <input type="text" placeholder="Gas Name">
+                <p>Size: <input type="text" placeholder="--kg"></p>
+                <p>Price: <input type="text" placeholder="-- FCFA"></p>
+                <p>Stock: <input type="text" placeholder="--"></p>
+
+                <div class="qty">
+                    <button onclick="changeQty(this,-1)">−</button>
+                    <input type="text" value="1" readonly>
+                    <button onclick="changeQty(this,1)">+</button>
+                </div>
+
+                <button class="reserve">Reserve</button>
+            </div>
+        </div>
+
+        <!-- GAS 4 -->
+        <div class="card">
+            <img src="placeholder.png" alt="Gas Bottle">
+            <div class="card-info">
+                <input type="text" placeholder="Gas Name">
+                <p>Size: <input type="text" placeholder="--kg"></p>
+                <p>Price: <input type="text" placeholder="-- FCFA"></p>
+                <p>Stock: <input type="text" placeholder="--"></p>
+
+                <div class="qty">
+                    <button onclick="changeQty(this,-1)">−</button>
+                    <input type="text" value="1" readonly>
+                    <button onclick="changeQty(this,1)">+</button>
+                </div>
+
+                <button class="reserve">Reserve</button>
+            </div>
+        </div>
+
+        <!-- GAS 5 -->
+        <div class="card">
+            <img src="placeholder.png" alt="Gas Bottle">
+            <div class="card-info">
+                <input type="text" placeholder="Gas Name">
+                <p>Size: <input type="text" placeholder="--kg"></p>
+                <p>Price: <input type="text" placeholder="-- FCFA"></p>
+                <p>Stock: <input type="text" placeholder="--"></p>
+
+                <div class="qty">
+                    <button onclick="changeQty(this,-1)">−</button>
+                    <input type="text" value="1" readonly>
+                    <button onclick="changeQty(this,1)">+</button>
+                </div>
+
+                <button class="reserve">Reserve</button>
+            </div>
+        </div>
 
     </div>
 </div>
@@ -224,3 +279,4 @@ function changeQty(btn, change) {
 
 </body>
 </html>
+                   
