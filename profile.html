@@ -20,14 +20,6 @@
         background-color: #bfe9f5;
     }
 
-    /* ===== PAGE WRAPPER ===== */
-    .container {
-        max-width: 480px;
-        margin: 0 auto;
-        padding: 15px;
-        width: 100%;
-    }
-
     /* ===== HEADER ===== */
     .header {
         position: sticky;
@@ -87,6 +79,7 @@
         display: flex;
         gap: 12px;
         width: 100%;
+        text-align: center;
     }
 
     /* ===== GAS BOTTLE ===== */
@@ -167,12 +160,12 @@
 </head>
 
 <body>
-<div class="container">
+
 
     <!-- ===== HEADER ===== -->
     <div class="header">
         <div class="icon" aria-label="Back">←</div>
-        <div class="icon" aria-label="Settings">⚙</div>
+        <div class="icon" aria-label="Settings" style="top: 12; right: 12px;">⚙</div>
     </div>
 
     <!-- ===== PROFILE ===== -->
@@ -218,6 +211,17 @@
             <div class="info-box {{stock_class}}">{{stock_status}}</div>
         </div>
     </div>
+     <div class="gas-card">
+        <div class="gas-bottle camgaz">
+            <div class="gas-name">{{gas_brand}}</div>
+        </div>
+        <div class="details">
+            <div class="info-box">Available: {{available}}</div>
+            <div class="info-box">Quarter: {{quarter}}</div>
+            <div class="info-box price-box">Price: {{price}} CFA</div>
+            <div class="info-box {{stock_class}}">{{stock_status}}</div>
+        </div>
+    </div> 
     <div class="gas-card">
         <div class="gas-bottle camgaz">
             <div class="gas-name">{{gas_brand}}</div>
@@ -229,61 +233,7 @@
             <div class="info-box {{stock_class}}">{{stock_status}}</div>
         </div>
     </div>
-    <div class="gas-card">
-        <div class="gas-bottle camgaz">
-            <div class="gas-name">{{gas_brand}}</div>
-        </div>
-        <div class="details">
-            <div class="info-box">Available: {{available}}</div>
-            <div class="info-box">Quarter: {{quarter}}</div>
-            <div class="info-box price-box">Price: {{price}} CFA</div>
-            <div class="info-box {{stock_class}}">{{stock_status}}</div>
-        </div>
-    </div>
-    <div class="gas-card">
-        <div class="gas-bottle camgaz">
-            <div class="gas-name">{{gas_brand}}</div>
-        </div>
-        <div class="details">
-            <div class="info-box">Available: {{available}}</div>
-            <div class="info-box">Quarter: {{quarter}}</div>
-            <div class="info-box price-box">Price: {{price}} CFA</div>
-            <div class="info-box {{stock_class}}">{{stock_status}}</div>
-        </div>
-    </div>
-    <div class="gas-card">
-        <div class="gas-bottle camgaz">
-            <div class="gas-name">{{gas_brand}}</div>
-        </div>
-        <div class="details">
-            <div class="info-box">Available: {{available}}</div>
-            <div class="info-box">Quarter: {{quarter}}</div>
-            <div class="info-box price-box">Price: {{price}} CFA</div>
-            <div class="info-box {{stock_class}}">{{stock_status}}</div>
-        </div>
-    </div>
-    <div class="gas-card">
-        <div class="gas-bottle camgaz">
-            <div class="gas-name">{{gas_brand}}</div>
-        </div>
-        <div class="details">
-            <div class="info-box">Available: {{available}}</div>
-            <div class="info-box">Quarter: {{quarter}}</div>
-            <div class="info-box price-box">Price: {{price}} CFA</div>
-            <div class="info-box {{stock_class}}">{{stock_status}}</div>
-        </div>
-    </div>
-    <div class="gas-card">
-        <div class="gas-bottle camgaz">
-            <div class="gas-name">{{gas_brand}}</div>
-        </div>
-        <div class="details">
-            <div class="info-box">Available: {{available}}</div>
-            <div class="info-box">Quarter: {{quarter}}</div>
-            <div class="info-box price-box">Price: {{price}} CFA</div>
-            <div class="info-box {{stock_class}}">{{stock_status}}</div>
-        </div>
-    </div>
+
 
     <!-- Repeat card dynamically from DB (total 9) -->
 
