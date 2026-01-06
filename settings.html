@@ -2,15 +2,15 @@
 <html>
 <head>
     <title>Settings</title>
+
     <style>
         body {
-            background-color: lightblue; /* keep original background */
-            font-family: Arial, sans-serif;
+            background-color: lightblue;   /* keep original */
+            font-family: Arial;
             margin: 0;
             padding: 0;
         }
 
-        /* BACK BUTTON */
         .back {
             position: absolute;
             top: 15px;
@@ -18,16 +18,10 @@
             font-size: 20px;
             text-decoration: none;
             color: #1f4e79;
-            cursor: pointer;
         }
 
-        .back:hover {
-            color: #0b2e4f;
-        }
-
-        .container {
-            width: 80%;
-            max-width: 600px;
+        .settings-box {
+            width: 360px;
             margin: 80px auto;
             background-color: white;
             padding: 20px;
@@ -35,88 +29,72 @@
         }
 
         h2 {
+            text-align: center;
             color: #1f4e79;
-            margin-bottom: 20px;
-        }
-
-        .setting-item {
-            margin-bottom: 15px;
         }
 
         label {
             display: block;
-            margin-bottom: 5px;
+            margin-top: 12px;
+            font-weight: bold;
         }
 
         input {
             width: 100%;
             padding: 8px;
+            margin-top: 4px;
             border: 1px solid #4a90e2;
             border-radius: 5px;
-            font-size: 14px;
         }
 
-        /* SAVE CHANGES BUTTON */
         .save {
+            width: 100%;
+            margin-top: 15px;
+            padding: 10px;
             background-color: #4a90e2;
             color: white;
             border: none;
-            padding: 10px 20px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 16px;
-            margin-top: 20px;
         }
 
-        .save:hover {
-            background-color: #3570b0;
-        }
-
-        /* LOG OUT BUTTON */
         .logout {
+            width: 100%;
+            margin-top: 10px;
+            padding: 10px;
             background-color: red;
             color: white;
             border: none;
-            padding: 10px 20px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 16px;
-            margin-top: 10px;
-        }
-
-        .logout:hover {
-            background-color: darkred;
         }
     </style>
 </head>
+
 <body>
 
 <a href="javascript:history.back()" class="back">⬅ </a>
 
-<div class="container">
+<div class="settings-box">
     <h2>Settings</h2>
 
-    <div class="setting-item">
-        <label>Username</label>
-        <input type="text" placeholder="Enter new username">
-    </div>
+    <label>Username</label>
+    <input type="text" placeholder="Username">
 
-    <div class="setting-item">
-        <label>Email</label>
-        <input type="email" placeholder="Enter new email">
-    </div>
+    <!-- EMAIL RESTORED -->
+    <label>Email</label>
+    <input type="email" placeholder="Email">
 
-    <div class="setting-item">
-        <label>Password</label>
-        <input type="password" placeholder="Enter new password">
-    </div>
+    <label>Password</label>
+    <input type="password" placeholder="Password">
 
-    <!-- SAVE CHANGES BUTTON -->
+    <!-- CONFIRM PASSWORD -->
+    <label>Confirm Password</label>
+    <input type="password" placeholder="Confirm Password">
+
     <button class="save">Save Changes</button>
-
-    <!-- LOG OUT BUTTON -->
     <button class="logout">Log Out</button>
 </div>
 
 </body>
-</html>
+</html
