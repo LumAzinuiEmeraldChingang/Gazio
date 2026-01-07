@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile with Gas Grid</title>
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+html, body {
+  overflow-x: hidden;
+}
+
+body {
+  background: linear-gradient(135deg, #1697ec, #4dc9f7);
+  min-height: 100vh;
+}
+
+.back-arrow {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  font-size: 26px;
+  color: #fff;
+  text-decoration: none;
+  z-index: 9999;
+}
+.wrapper {
+  max-width: 1250px;
+  margin: 50px auto;
+  width: 100%;
+  padding: 0 10px;
+}
+
+.top-section {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.profile-left {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 3px solid #1e40af;
+  background-color: #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  font-size: 12px;
+  text-align: center;
+}
+
+.gas-section h2 {
+  margin-bottom: 10px;
+  color: #1e293b;
+}
+
+.gas-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 columns always */
+  gap: 10px;
+}
+
+.gas-card {
+  display: flex;
+  flex-direction: row;
+  border: 3px solid #1e293b;
+  background: #f8fafc;
+  width: 100%;
+  min-width: 0; /* important to prevent overflow */
+}
+
+.gas-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px;
+  background-color: #e2e8f0;
+}
+
+.gas-image {
+  width: 100%;
+  max-width: 80px;
+  aspect-ratio: 1/1;
+  background-color: #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: #64748b;
+  margin-bottom: 6px;
+}
+
+.qty-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+.qty-box button {
+  width: 26px;
+  height: 26px;
+  font-size: 16px;
+  cursor: pointer;
+}
+.qty-box input {
+  width: 42px;
+  height: 26px;
+  text-align: center;
+}
+.reserve-btn {
+  background: #22c55e;
+  color: #fff;
+  border: none;
+  padding: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+}
+.reserve-btn:hover {
+  background: #16a34a;
+}
+.gas-right {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* push available text to bottom */
+  padding: 6px;
+  flex: 1;
+  gap: 4px;
+  min-width: 0; /* important to prevent overflow */
+}
+.gas-right div:not(.available-text) {
+  background: #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  color: #64748b;
+  font-size: 10px;
+  padding: 2px 4px;
+}
+.available-text {
+  color: #16a34a; /* green text */
+  font-weight: bold;
+  font-size: 12px;
+  margin-top: auto; /* push to bottom */
+  text-align: left;
+  background: none;
+}
+/* Make grid fit all devices without horizontal scroll */
+@media (max-width: 1250px) {
+  .gas-card {
+    flex-direction: column; /* stack left/right on very narrow screens */
+  }
+}
+</style>
+</head>
+<body>
+<a href="javascript:history.back()" class="back-arrow">&#8592;</a>
+<div class="wrapper">
+  <div class="top-section">
+    <div class="profile-left">Profile</div>
+    <div style="flex:1;">
+      <div style="width:150px; height:20px; background:#e2e8f0; margin-bottom:4px; display:flex; align-items:center; justify-content:center; color:#64748b; font-size:10px;">Username</div>
+      <div style="width:100px; height:16px; background:#e2e8f0; margin-bottom:4px; display:flex; align-items:center; justify-content:center; color:#64748b; font-size:9px;">Location</div>
+      <div style="width:120px; height:16px; background:#e2e8f0; display:flex; align-items:center; justify-content:center; color:#64748b; font-size:9px;">Phone</div>
+    </div>
+  </div>
+  <div class="gas-section">
+    <h2>Available Gas Bottles</h2>
+    <div class="gas-grid">
+      <!-- 9 Cards for 3x3 Grid -->
+      <div class="gas-card">
+        <div class="gas-left">
+          <div class="gas-image">Image</div>
+          <div class="qty-box">
+            <button>-</button>
+            <input type="number" value="1" min="1">
+            <button>+</button>
+          </div>
+          <button class="reserve-btn">Reserve</button>
+        </div>
+        <div class="gas-right">
+        <div>Gas Name: gas name</div>
+          <div>Quantity Qty</div>
+          <div>Size: size</div>
+          <div>Price: price</div> 
+          <div class="available-text">Available</div>
+        </div>
+      </div>
+      <div class="gas-card">
+        <div class="gas-left">
+          <div class="gas-image">Image</div>
+          <div class="qty-box">
+            <button>-</button>
+            <input type="number" value="1" min="1">
+            <button>+</button>
+          </div>
+          <button class="reserve-btn">Reserve</button>
+        </div>
+        <div class="gas-right">
+       <div>Gas Name: gas name</div>
+          <div>Quantity Qty</div>
+          <div>Size: size</div>
+          <div>Price: price</div>
+          <div class="available-text">Available</div>
+        </div>
+      </div>
+      <div class="gas-card">
+        <div class="gas-left">
+          <div class="gas-image">Image</div>
+          <div class="qty-box">
+            <button>-</button>
+            <input type="number" value="1" min="1">
+            <button>+</button>
+          </div>
+          <button class="reserve-btn">Reserve</button>
+        </div>
+        <div class="gas-right">
+       <div>Gas Name: gas name</div>
+          <div>Quantity Qty</div>
+          <div>Size: size</div>
+          <div>Price: price</div>
+          <div class="available-text">Available</div>
+        </div>
+      </div>
+      <div class="gas-card">
+        <div class="gas-left">
+          <div class="gas-image">Image</div>
+          <div class="qty-box">
+            <button>-</button>
+            <input type="number" value="1" min="1">
+            <button>+</button>
+          </div>
+          <button class="reserve-btn">Reserve</button>
+        </div>
+        <div class="gas-right">
+        <div>Gas Name: gas name</div>
+          <div>Quantity Qty</div>
+          <div>Size: size</div>
+          <div>Price: price</div>
+          <div class="available-text">Available</div>
+        </div>
+      </div>
+      <div class="gas-card">
+        <div class="gas-left">
+          <div class="gas-image">Image</div>
+          <div class="qty-box">
+            <button>-</button>
+            <input type="number" value="1" min="1">
+            <button>+</button>
+          </div>
+          <button class="reserve-btn">Reserve</button>
+        </div>
+        <div class="gas-right">
+        <div>Gas Name: gas name</div>
+          <div>Quantity Qty</div>
+          <div>Size: size</div>
+          <div>Price: price</div>
+          <div class="available-text">Available</div>
+        </div>
+      </div>
+      <div class="gas-card">
+        <div class="gas-left">
+          <div class="gas-image">Image</div>
+          <div class="qty-box">
+            <button>-</button>
+            <input type="number" value="1" min="1">
+            <button>+</button>
+          </div>
+          <button class="reserve-btn">Reserve</button>
+        </div>
+        <div class="gas-right">
+          <div>Gas Name: gas name</div>
+          <div>Quantity Qty</div>
+          <div>Size: size</div>
+          <div>Price: price</div>
+          <div class="available-text">Available</div>
+        </div>
+      </div>
+      <div class="gas-card">
+        <div class="gas-left">
+          <div class="gas-image">Image</div>
+          <div class="qty-box">
+            <button>-</button>
+            <input type="number" value="1" min="1">
+            <button>+</button>
+          </div>
+          <button class="reserve-btn">Reserve</button>
+        </div>
+        <div class="gas-right">
+          <div>Gas Name: gas name</div>
+          <div>Quantity Qty</div>
+          <div>Size: size</div>
+          <div>Price: price</div>
+          <div class="available-text">Available</div>
+        </div>
+      </div>
+      <div class="gas-card">
+        <div class="gas-left">
+          <div class="gas-image">Image</div>
+          <div class="qty-box">
+            <button>-</button>
+            <input type="number" value="1" min="1">
+            <button>+</button>
+          </div>
+          <button class="reserve-btn">Reserve</button>
+        </div>
+        <div class="gas-right">
+          <div>Gas Name: gas name</div>
+          <div>Quantity Qty</div>
+          <div>Size: size</div>
+          <div>Price: price</div>
+          <div class="available-text">Available</div>
+        </div>
+      </div>
+      <div class="gas-card">
+        <div class="gas-left">
+          <div class="gas-image">Image</div>
+          <div class="qty-box">
+            <button>-</button>
+            <input type="number" value="1" min="1">
+            <button>+</button>
+          </div>
+          <button class="reserve-btn">Reserve</button>
+        </div>
+        <div class="gas-right">
+          <div>Gas Name: gas name</div>
+          <div>Quantity Qty</div>
+          <div>Size: size</div>
+          <div>Price: price</div>
+          <div class="available-text">Available</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+<script>
+document.addEventListener("click", function (e) {
+  // Plus button
+  if (e.target.textContent === "+") {
+    const input = e.target.previousElementSibling;
+    input.value = parseInt(input.value || 1) + 1;
+  }
+  // Minus button
+  if (e.target.textContent === "-") {
+    const input = e.target.nextElementSibling;
+    const min = parseInt(input.min) || 1;
+    const current = parseInt(input.value || min);
+    if (current > min) {
+      input.value = current - 1;
+    }
+  }
+});
+</script>
+
+</body>
+</html>
