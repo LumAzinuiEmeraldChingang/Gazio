@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Settings</title>
+
+    <style>
+        body {
+            background-color: lightblue;   /* keep original */
+            font-family: Arial;
+            margin: 0;
+            padding: 0;
+        }
+
+        .back {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            font-size: 20px;
+            text-decoration: none;
+            color: #1f4e79;
+        }
+
+        .settings-box {
+            width: 360px;
+            margin: 80px auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #1f4e79;
+        }
+
+        label {
+            display: block;
+            margin-top: 12px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 4px;
+            border: 1px solid #4a90e2;
+            border-radius: 5px;
+        }
+
+        .save {
+            width: 100%;
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .logout {
+            width: 100%;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+<a href="javascript:history.back()" class="back">⬅ </a>
+
+<div class="settings-box">
+    <h2>Settings</h2>
+
+    <label>Username</label>
+    <input type="text" placeholder="Username">
+
+    <!-- EMAIL RESTORED -->
+    <label>Email</label>
+    <input type="email" placeholder="Email">
+
+    <label>Password</label>
+    <input type="password" placeholder="Password">
+
+    <!-- CONFIRM PASSWORD -->
+    <label>Confirm Password</label>
+    <input type="password" placeholder="Confirm Password">
+
+    <button class="save">Save Changes</button>
+    <button class="logout">Log Out</button>
+</div>
+
+</body>
+</html
