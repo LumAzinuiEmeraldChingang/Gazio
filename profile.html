@@ -141,13 +141,13 @@
     <!-- ===== HEADER ===== -->
     <div class="header">
       <a href="javascript:history.back()" class="icon" aria-label="Back">←</a>
-    <a href="/settings" class="icon" aria-label="Settings">⚙</a>
+    <a href="setting.html" class="icon" aria-label="Settings">⚙</a>
     </div>
     <!-- ===== PROFILE ===== -->
     <div class="profile">
         <div class="avatar"></div>
         <div class="username">{{username}}</div>
-        <button class="edit-btn">Edit</button>
+        <button class="edit-btn" onclick="editProfile()">Edit</button>
     </div>
     <!-- ===== GAS CARDS (DB-DRIVEN) ===== -->
     <!-- CARD TEMPLATE -->
@@ -210,8 +210,7 @@
 </div>
 <script>
 function editProfile() {
-    alert("Edit profile clicked");
-    // window.location.href = "/edit-profile";
+    window.location.href = "edit.html";
 }
 </script>
 </body>

@@ -111,10 +111,38 @@ body {
 .nav-item i {
     font-size: 22px;
 }
+
+/* WELCOME CONTAINER */
+.welcome-container {
+    text-align: center;
+    background: linear-gradient(45deg, #007bff, #00d4ff, #007bff);
+    background-size: 200% 200%;
+    animation: shine 2s ease-in-out infinite;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 0;
+}
+
+.welcome-container h1 {
+    color: white;
+    margin: 0;
+}
+
+@keyframes shine {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
 </style>
 </head>
 
 <body>
+
+<!-- WELCOME CONTAINER -->
+<div class="welcome-container">
+    <h1>WELCOME TO GAZIO</h1>
+</div>
 
 <!-- TOP BAR -->
 <header class="top-bar">

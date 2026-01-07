@@ -169,13 +169,10 @@ async function updateSettings() {
 }
 
 async function logout() {
-    const confirmLogout = confirm("Are you sure you want to log out? All data will be deleted.");
+    const confirmLogout = confirm("Are you sure you want to log out?");
     if (!confirmLogout) return;
 
-    const response = await fetch('/api/logout', { method: 'DELETE' });
-    const result = await response.json();
-    alert(result.message);
-    window.location.href = '/';
+    window.location.href = "Login.html";
 }
 </script>
 </body>
