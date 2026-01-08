@@ -80,7 +80,8 @@
 <body>
   <div class="container">
     <h2>Login</h2>
-    <form>
+    <div id="error-message" style="color: red; text-align: center; margin-bottom: 15px; display: none;"></div>
+    <form method="POST" action="/login">
       <div class="form-group">
         <label for="login-username">Username:</label>
         <input type="text" id="login-username" name="username" required>
@@ -97,5 +98,13 @@
       <p>Don't have an account? <a href="Sign-up.html">Sign up</a></p>
     </div>
   </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('error') === 'invalid') {
+      document.getElementById('error-message').textContent = 'Wrong password or wrong username';
+      document.getElementById('error-message').style.display = 'block';
+    }
+  </script>
 </body>
 </html>
