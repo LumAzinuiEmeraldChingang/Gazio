@@ -4,7 +4,7 @@
     <title>Seller Profile</title>
     <style>
         body {
-            background-color: lightblue;   /* DO NOT CHANGE */
+            background-color: lightblue;   /* Original background */
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
@@ -16,8 +16,9 @@
             top: 15px;
             left: 15px;
             text-decoration: none;
-            font-size: 20px;
+            font-size: 22px;
             color: #1f4e79;
+            font-weight: bold;
         }
 
         .back:hover {
@@ -26,51 +27,56 @@
 
         /* MAIN CONTAINER */
         .container {
-            width: 80%;
+            width: 90%;
             max-width: 1000px;
             margin: 80px auto;
             background-color: white;
             padding: 20px;
-            border-radius: 10px;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
         }
 
         /* SELLER INFO */
         .seller-info {
             display: flex;
             align-items: center;
+            gap: 20px;
             border-bottom: 2px solid #4a90e2;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+            background: #f0f8ff;
+            border-radius: 10px;
         }
 
         .seller-info img {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            border: 2px solid #4a90e2;
-            margin-right: 20px;
+            width: 130px;
+            height: 130px;
+            border-radius: 8px; /* square with rounded corners */
+            border: 3px solid #4a90e2;
+            object-fit: cover;
         }
 
         .seller-info div {
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 10px;
         }
 
         .seller-info input {
-            padding: 5px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            width: 180px;
+            padding: 6px 8px;
+            border: 1px solid #4a90e2;
+            border-radius: 6px;
             font-size: 14px;
-            width: 200px;
         }
 
-        /* GAS BOTTLES GRID */
         h3 {
             color: #1f4e79;
             margin-bottom: 15px;
+            font-size: 20px;
         }
 
+        /* GAS CARDS */
         .bottles {
             display: flex;
             flex-direction: column;
@@ -78,40 +84,49 @@
         }
 
         .card {
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            padding: 15px;
             display: flex;
-            flex-direction: row; /* image left, info right */
             align-items: center;
-            justify-content: flex-start;
             gap: 15px;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
+        /* Different gradient colors for cards */
+        .card:nth-child(1) { background: linear-gradient(90deg, #ffe0e0, #ffcccc); }
+        .card:nth-child(2) { background: linear-gradient(90deg, #e0ffe0, #ccffcc); }
+        .card:nth-child(3) { background: linear-gradient(90deg, #e0e0ff, #ccccff); }
+        .card:nth-child(4) { background: linear-gradient(90deg, #fff0e0, #ffddb3); }
+        .card:nth-child(5) { background: linear-gradient(90deg, #f0ffe0, #ddffb3); }
+
         .card img {
-            width: 120px;   /* adjust image size */
-            height: 120px;
+            width: 140px;
+            height: 140px;
             object-fit: cover;
             border-radius: 8px;
+            border: 2px solid #ccc;
         }
 
         .card-info {
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: flex-start;
             flex: 1;
+            gap: 5px;
         }
 
         .card-info input {
-            width: 100%;
-            padding: 4px;
+            width: 160px;  /* reduced size */
+            padding: 5px 6px;
             font-size: 14px;
-            margin-bottom: 4px;
+            border: 1px solid #4a90e2;
+            border-radius: 6px;
         }
 
         .card-info p {
-            margin: 2px 0;
+            margin: 3px 0;
             font-size: 14px;
+            font-weight: 500;
         }
 
         .qty {
@@ -122,41 +137,50 @@
         }
 
         .qty button {
-            width: 28px;
-            height: 28px;
+            width: 30px;
+            height: 30px;
             font-size: 18px;
             border: none;
-            background-color: #4a90e2;
+            border-radius: 6px;
             color: white;
-            border-radius: 4px;
             cursor: pointer;
         }
+
+        .qty .minus { background-color: #ff4c4c; } /* red */
+        .qty .plus { background-color: #4caf50; }   /* green */
 
         .qty input {
             width: 40px;
             text-align: center;
             border: 1px solid #ccc;
-            border-radius: 4px;
+            border-radius: 6px;
+            font-size: 14px;
+            background: #fff;
         }
 
         .reserve {
-            margin-top: 6px;
-            background-color: green;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 5px;
-            cursor: pointer;
+            margin-top: 8px;
             width: fit-content;
+            padding: 7px 14px;
+            border: none;
+            border-radius: 6px;
+            background-color: #28a745; /* green */
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .reserve:hover {
+            background-color: #218838;
         }
     </style>
 </head>
 <body>
 
-<a href="javascript:history.back()" class="back">⬅ </a>
+<a href="javascript:history.back()" class="back">⬅</a>
 
 <div class="container">
-    <!-- SELLER INFO PLACEHOLDERS -->
+    <!-- SELLER INFO -->
     <div class="seller-info">
         <img src="placeholder.png" alt="Profile">
         <div>
@@ -169,8 +193,7 @@
     <h3>Available Gas Bottles</h3>
 
     <div class="bottles">
-
-        <!-- GAS 1 -->
+        <!-- Five Gas Cards -->
         <div class="card">
             <img src="placeholder.png" alt="Gas Bottle">
             <div class="card-info">
@@ -178,18 +201,15 @@
                 <p>Size: <input type="text" placeholder="--kg"></p>
                 <p>Price: <input type="text" placeholder="-- FCFA"></p>
                 <p>Stock: <input type="text" placeholder="--"></p>
-
                 <div class="qty">
-                    <button onclick="changeQty(this,-1)">−</button>
+                    <button class="minus" onclick="changeQty(this,-1)">−</button>
                     <input type="text" value="1" readonly>
-                    <button onclick="changeQty(this,1)">+</button>
+                    <button class="plus" onclick="changeQty(this,1)">+</button>
                 </div>
-
                 <button class="reserve">Reserve</button>
             </div>
         </div>
 
-        <!-- GAS 2 -->
         <div class="card">
             <img src="placeholder.png" alt="Gas Bottle">
             <div class="card-info">
@@ -197,18 +217,15 @@
                 <p>Size: <input type="text" placeholder="--kg"></p>
                 <p>Price: <input type="text" placeholder="-- FCFA"></p>
                 <p>Stock: <input type="text" placeholder="--"></p>
-
                 <div class="qty">
-                    <button onclick="changeQty(this,-1)">−</button>
+                    <button class="minus" onclick="changeQty(this,-1)">−</button>
                     <input type="text" value="1" readonly>
-                    <button onclick="changeQty(this,1)">+</button>
+                    <button class="plus" onclick="changeQty(this,1)">+</button>
                 </div>
-
                 <button class="reserve">Reserve</button>
             </div>
         </div>
 
-        <!-- GAS 3 -->
         <div class="card">
             <img src="placeholder.png" alt="Gas Bottle">
             <div class="card-info">
@@ -216,18 +233,15 @@
                 <p>Size: <input type="text" placeholder="--kg"></p>
                 <p>Price: <input type="text" placeholder="-- FCFA"></p>
                 <p>Stock: <input type="text" placeholder="--"></p>
-
                 <div class="qty">
-                    <button onclick="changeQty(this,-1)">−</button>
+                    <button class="minus" onclick="changeQty(this,-1)">−</button>
                     <input type="text" value="1" readonly>
-                    <button onclick="changeQty(this,1)">+</button>
+                    <button class="plus" onclick="changeQty(this,1)">+</button>
                 </div>
-
                 <button class="reserve">Reserve</button>
             </div>
         </div>
 
-        <!-- GAS 4 -->
         <div class="card">
             <img src="placeholder.png" alt="Gas Bottle">
             <div class="card-info">
@@ -235,18 +249,15 @@
                 <p>Size: <input type="text" placeholder="--kg"></p>
                 <p>Price: <input type="text" placeholder="-- FCFA"></p>
                 <p>Stock: <input type="text" placeholder="--"></p>
-
                 <div class="qty">
-                    <button onclick="changeQty(this,-1)">−</button>
+                    <button class="minus" onclick="changeQty(this,-1)">−</button>
                     <input type="text" value="1" readonly>
-                    <button onclick="changeQty(this,1)">+</button>
+                    <button class="plus" onclick="changeQty(this,1)">+</button>
                 </div>
-
                 <button class="reserve">Reserve</button>
             </div>
         </div>
 
-        <!-- GAS 5 -->
         <div class="card">
             <img src="placeholder.png" alt="Gas Bottle">
             <div class="card-info">
@@ -254,13 +265,11 @@
                 <p>Size: <input type="text" placeholder="--kg"></p>
                 <p>Price: <input type="text" placeholder="-- FCFA"></p>
                 <p>Stock: <input type="text" placeholder="--"></p>
-
                 <div class="qty">
-                    <button onclick="changeQty(this,-1)">−</button>
+                    <button class="minus" onclick="changeQty(this,-1)">−</button>
                     <input type="text" value="1" readonly>
-                    <button onclick="changeQty(this,1)">+</button>
+                    <button class="plus" onclick="changeQty(this,1)">+</button>
                 </div>
-
                 <button class="reserve">Reserve</button>
             </div>
         </div>
