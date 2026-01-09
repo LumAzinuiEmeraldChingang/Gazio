@@ -34,6 +34,10 @@ const db = new sqlite3.Database('./users.db', (err) => {
 
 // Routes
 app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'welcome.html'));
+});
+
+app.get('/home', (req, res) => {
   res.sendFile(path.join(__dirname, 'home.html'));
 });
 
@@ -69,7 +73,7 @@ app.post('/login', (req, res) => {
     }
     if (row) {
       // Login successful, redirect to home
-      res.redirect('/');
+      res.redirect('/home');
     } else {
       res.redirect('/login?error=invalid');
     }
