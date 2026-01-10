@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — Gazio</title>
+  <meta name="description" content="Gazio — trusted gas marketplace. Learn about our mission, values, and team.">
+  <style>
+    :root{
+      --bg:#f7f9fb; --card:#ffffff; --muted:#6b7280; --brand:#0f172a; --accent:#0ea5a3; --max:1100px;
+    }
+    *{box-sizing:border-box}
+    body{font-family:Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial; margin:0; background:var(--bg); color:var(--brand);}
+    .site-header{background:linear-gradient(90deg,#06202a 0%, #064b52 100%); color:#fff; padding:22px 28px}
+    .site-header .wrap{max-width:var(--max); margin:0 auto; display:flex; align-items:center; justify-content:space-between}
+    .brand{font-weight:700; letter-spacing:0.4px}
+    .nav a{color:rgba(255,255,255,0.9); margin-left:18px; text-decoration:none; font-weight:600}
+    .hero{max-width:var(--max); margin:36px auto; padding:36px; background:linear-gradient(180deg,#ffffff,#f3fbfb); border-radius:12px; box-shadow:0 6px 20px rgba(16,24,40,0.06); display:flex; gap:28px; align-items:center}
+    .hero .col{flex:1}
+    .hero h1{margin:0;font-size:28px}
+    .hero p{color:var(--muted); margin-top:10px; line-height:1.6}
+    .values{max-width:var(--max); margin:28px auto; display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:18px}
+    .value{background:var(--card); padding:20px; border-radius:10px; box-shadow:0 4px 16px rgba(16,24,40,0.04)}
+    .value h3{margin:0 0 8px 0}
+    .team-section{max-width:var(--max); margin:36px auto}
+    .team-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:18px}
+    .team-card{background:var(--card); padding:18px; border-radius:10px; text-align:center; box-shadow:0 6px 18px rgba(16,24,40,0.06); transition:transform .18s ease}
+    .team-card:hover{transform:translateY(-6px)}
+    .team-card img{width:140px;height:140px;border-radius:50%;object-fit:cover}
+    .team-card h4{margin:12px 0 6px 0;font-size:16px}
+    .team-card p{margin:0;color:var(--muted); font-size:14px}
+    .contact{max-width:var(--max); margin:36px auto; padding:20px; background:linear-gradient(180deg,#ffffff,#f8fbff); border-radius:10px; text-align:center}
+    .contact a{display:inline-block;margin-top:10px;background:var(--accent); color:#fff;padding:10px 16px;border-radius:8px;text-decoration:none}
+    footer{max-width:var(--max); margin:28px auto 60px; color:var(--muted); text-align:center}
+    @media(max-width:700px){ .hero{flex-direction:column; text-align:center} .site-header .wrap{flex-direction:column; gap:10px} }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <div class="brand">Gazio</div>
+      <nav class="nav"><a href="/welcome.html">Home</a><a href="/Sign-up.html">Sign Up</a></nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="about-hero">
+      <div class="col">
+        <h1 id="about-hero">About Gazio — Reliable, Local Gas Marketplace</h1>
+        <p>We connect buyers and verified local gas vendors through a secure, easy-to-use platform — saving time, improving safety, and ensuring fair prices for every transaction.</p>
+      </div>
+      <div class="col">
+        <p style="color:var(--muted);">Founded at the ICT University of Yaoundé, Gazio began as a student project and became a mission to simplify access to gas supplies for households and businesses. We focus on trust, convenience, and excellent customer support.</p>
+      </div>
+    </section>
+
+    <section class="values" aria-label="Our values">
+      <div class="value"><h3>Verified Vendors</h3><p class="muted">All sellers go through verification so you can buy with confidence.</p></div>
+      <div class="value"><h3>Secure Transactions</h3><p class="muted">Transparent payments and clear vendor info reduce risk for buyers.</p></div>
+      <div class="value"><h3>Fast & Convenient</h3><p class="muted">Find, reserve, and contact vendors close to you in a few taps.</p></div>
+    </section>
+
+    <section class="team-section" aria-labelledby="team-heading">
+      <h2 id="team-heading" style="max-width:var(--max);margin:0 auto 12px;padding-left:10px">Our Team</h2>
+      <div class="team-grid">
+        <a class="team-card" href="/lum.html"><img src="/image/Emerald.jpeg" alt="Lum Azinui" onerror="this.onerror=null;this.src='/images/Emerald.jpeg'"><h4>Lum Azinui</h4><p>Scrum Mistress</p></a>
+        <a class="team-card" href="/beri.html"><img src="/image/beri.jpeg" alt="Beri Ndamnsa" onerror="this.onerror=null;this.src='/images/beri.jpeg'"><h4>Beri Ndamnsa</h4><p>Chief Financial Officer</p></a>
+        <a class="team-card" href="/shiloh.html"><img src="/image/Shiloh.jpeg" alt="Dongmo Shiloh" onerror="this.onerror=null;this.src='/images/Shiloh.jpeg'"><h4>Dongmo Shiloh</h4><p>Product Owner</p></a>
+        <a class="team-card" href="/promise.html"><img src="/image/Promiz.jpeg" alt="Asangwa Promise" onerror="this.onerror=null;this.src='/images/Promiz.jpeg'"><h4>Asangwa Promise</h4><p>Software Developer</p></a>
+        <a class="team-card" href="/chelsea.html"><img src="/image/Chelsea.jpeg" alt="Anembom Chelsea" onerror="this.onerror=null;this.src='/images/Chelsea.jpeg'"><h4>Anembom Chelsea</h4><p>Chief Technology Officer</p></a>
+        <a class="team-card" href="/canelle.html"><img src="/image/Canelle.jpeg" alt="Nambong Canelle" onerror="this.onerror=null;this.src='/images/Canelle.jpeg'"><h4>Nambong Canelle</h4><p>Product Owner</p></a>
+      </div>
+    </section>
+
+    <section class="contact">
+      <h3>Work with us</h3>
+      <p style="color:var(--muted)">Interested in partnering or offering feedback? We'd love to hear from you.</p>
+      <a href="mailto:hello@gazio.example">Contact Us</a>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 Gazio — All rights reserved.</p>
+  </footer>
+</body>
+</html>
