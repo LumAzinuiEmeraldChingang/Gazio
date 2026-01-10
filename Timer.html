@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Gas Collection Timer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #87CEEB; /* Sky blue background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .card {
+            background: white; /* Card remains white */
+            padding: 30px;
+            width: 360px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 5px;
+            color: #1d3557;
+        }
+
+        p {
+            color: #555;
+        }
+
+        #timer {
+            font-size: 32px;
+            margin: 20px 0;
+            font-weight: bold;
+            color: #1d3557;
+        }
+
+        .warning {
+            color: #f4a261;
+            animation: blink 1s infinite;
+        }
+
+        .expired {
+            color: #e63946;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0.3; }
+        }
+
+        button {
+            width: 120px;
+            padding: 10px;
+            margin: 10px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .collect {
+            background: #2a9d8f;
+            color: white;
+        }
+
+        .reject {
+            background: #e63946;
+            color: white;
+        }
+
+        .disabled {
+            background: #999;
+            cursor: not-allowed;
+        }
+
+        #status {
+            margin-top: 15px;
+            font-weight: bold;
+            color: #1d3557;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Gas Reserved</h2>
+    <p>Please collect your gas before time expires.</p>
+
+    <div id="timer">10:00:00</div>
+
+    <button class="collect" id="collectBtn">Collected</button>
+    <button class="reject" id="rejectBtn">Rejected</button>
+
+    <div id="status"></div>
+</div>
+
+<script>
+    let timeLeft = 10 * 60 * 60; // 10 hours
+    let warningPlayed = false;
+
+    let timerElement = document.getElementById("timer");
+    let statusElement = document.getElementById("status");
+    let collectBtn = document.getElementById("collectBtn");
+    let rejectBtn = document.getElementById("rejectBtn");
+
+    function playBeep(frequency, duration) {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioCtx.createOscillator();
+        oscillator.type = 'sine';
+        oscillator.frequency.value = frequency;
+        oscillator.connect(audioCtx.destination);
+        oscillator.start();
+        setTimeout(() => {
+            oscillator.stop();
+            audioCtx.close();
+        }, duration);
+    }
+
+    let timer = setInterval(updateTimer, 1000);
+
+    function updateTimer() {
+        let hours = Math.floor(timeLeft / 3600);
+        let minutes = Math.floor((timeLeft % 3600) / 60);
+        let seconds = timeLeft % 60;
+
+        timerElement.textContent =
+            String(hours).padStart(2, '0') + ":" +
+            String(minutes).padStart(2, '0') + ":" +
+            String(seconds).padStart(2, '0');
+
+        if (timeLeft === 3600 && !warningPlayed) {
+            playBeep(800, 600);
+            timerElement.classList.add("warning");
+            statusElement.textContent = "⚠️ 1 hour remaining!";
+            warningPlayed = true;
+        }
+
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            playBeep(300, 1200);
+            expireReservation();
+        }
+
+        timeLeft--;
+    }
+
+    function expireReservation() {
+        timerElement.textContent = "00:00:00";
+        timerElement.classList.remove("warning");
+        timerElement.classList.add("expired");
+        statusElement.textContent = "⏰ Reservation Expired!";
+        disableButtons();
+    }
+
+    collectBtn.addEventListener("click", function () {
+        clearInterval(timer);
+        statusElement.textContent = "✅ Gas Collected Successfully!";
+        disableButtons();
+    });
+
+    rejectBtn.addEventListener("click", function () {
+        clearInterval(timer);
+        statusElement.textContent = "❌ Reservation Rejected!";
+        disableButtons();
+    });
+
+    function disableButtons() {
+        collectBtn.disabled = true;
+        rejectBtn.disabled = true;
+        collectBtn.classList.add("disabled");
+        rejectBtn.classList.add("disabled");
+    }
+</script>
+
+</body>
+</html>
