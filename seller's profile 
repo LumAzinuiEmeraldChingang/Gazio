@@ -31,9 +31,8 @@
             max-width: 1000px;
             margin: 80px auto;
             background-color: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+            padding: 25px;
+            border-radius: 15px;
         }
 
         /* SELLER INFO */
@@ -44,16 +43,14 @@
             border-bottom: 2px solid #4a90e2;
             padding-bottom: 20px;
             margin-bottom: 25px;
-            background: #f0f8ff;
-            border-radius: 10px;
         }
 
         .seller-info img {
             width: 130px;
             height: 130px;
-            border-radius: 8px; /* square with rounded corners */
-            border: 3px solid #4a90e2;
+            border-radius: 8px;
             object-fit: cover;
+            border: 2px solid #4a90e2;
         }
 
         .seller-info div {
@@ -89,22 +86,16 @@
             gap: 15px;
             padding: 15px;
             border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border: 1px solid #ccc;
+            background-color: white;
         }
-
-        /* Different gradient colors for cards */
-        .card:nth-child(1) { background: linear-gradient(90deg, #ffe0e0, #ffcccc); }
-        .card:nth-child(2) { background: linear-gradient(90deg, #e0ffe0, #ccffcc); }
-        .card:nth-child(3) { background: linear-gradient(90deg, #e0e0ff, #ccccff); }
-        .card:nth-child(4) { background: linear-gradient(90deg, #fff0e0, #ffddb3); }
-        .card:nth-child(5) { background: linear-gradient(90deg, #f0ffe0, #ddffb3); }
 
         .card img {
             width: 140px;
             height: 140px;
             object-fit: cover;
             border-radius: 8px;
-            border: 2px solid #ccc;
+            border: 1px solid #ccc;
         }
 
         .card-info {
@@ -116,7 +107,7 @@
         }
 
         .card-info input {
-            width: 160px;  /* reduced size */
+            width: 160px;
             padding: 5px 6px;
             font-size: 14px;
             border: 1px solid #4a90e2;
@@ -126,9 +117,9 @@
         .card-info p {
             margin: 3px 0;
             font-size: 14px;
-            font-weight: 500;
         }
 
+        /* QTY SELECTOR SINGLE LIGHT BLUE COLOR */
         .qty {
             display: flex;
             align-items: center;
@@ -136,26 +127,21 @@
             margin-top: 5px;
         }
 
-        .qty button {
+        .qty button, .qty input {
+            background-color: #cce0ff;  /* light blue */
+            color: #000;
+            border: 1px solid #4a90e2;
+            border-radius: 6px;
+            font-size: 16px;
             width: 30px;
             height: 30px;
-            font-size: 18px;
-            border: none;
-            border-radius: 6px;
-            color: white;
             cursor: pointer;
+            text-align: center;
         }
-
-        .qty .minus { background-color: #ff4c4c; } /* red */
-        .qty .plus { background-color: #4caf50; }   /* green */
 
         .qty input {
             width: 40px;
-            text-align: center;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 14px;
-            background: #fff;
+            pointer-events: none;
         }
 
         .reserve {
@@ -202,9 +188,9 @@
                 <p>Price: <input type="text" placeholder="-- FCFA"></p>
                 <p>Stock: <input type="text" placeholder="--"></p>
                 <div class="qty">
-                    <button class="minus" onclick="changeQty(this,-1)">−</button>
+                    <button onclick="changeQty(this,-1)">−</button>
                     <input type="text" value="1" readonly>
-                    <button class="plus" onclick="changeQty(this,1)">+</button>
+                    <button onclick="changeQty(this,1)">+</button>
                 </div>
                 <button class="reserve">Reserve</button>
             </div>
@@ -218,9 +204,9 @@
                 <p>Price: <input type="text" placeholder="-- FCFA"></p>
                 <p>Stock: <input type="text" placeholder="--"></p>
                 <div class="qty">
-                    <button class="minus" onclick="changeQty(this,-1)">−</button>
+                    <button onclick="changeQty(this,-1)">−</button>
                     <input type="text" value="1" readonly>
-                    <button class="plus" onclick="changeQty(this,1)">+</button>
+                    <button onclick="changeQty(this,1)">+</button>
                 </div>
                 <button class="reserve">Reserve</button>
             </div>
@@ -234,9 +220,9 @@
                 <p>Price: <input type="text" placeholder="-- FCFA"></p>
                 <p>Stock: <input type="text" placeholder="--"></p>
                 <div class="qty">
-                    <button class="minus" onclick="changeQty(this,-1)">−</button>
+                    <button onclick="changeQty(this,-1)">−</button>
                     <input type="text" value="1" readonly>
-                    <button class="plus" onclick="changeQty(this,1)">+</button>
+                    <button onclick="changeQty(this,1)">+</button>
                 </div>
                 <button class="reserve">Reserve</button>
             </div>
@@ -250,9 +236,9 @@
                 <p>Price: <input type="text" placeholder="-- FCFA"></p>
                 <p>Stock: <input type="text" placeholder="--"></p>
                 <div class="qty">
-                    <button class="minus" onclick="changeQty(this,-1)">−</button>
+                    <button onclick="changeQty(this,-1)">−</button>
                     <input type="text" value="1" readonly>
-                    <button class="plus" onclick="changeQty(this,1)">+</button>
+                    <button onclick="changeQty(this,1)">+</button>
                 </div>
                 <button class="reserve">Reserve</button>
             </div>
@@ -266,9 +252,9 @@
                 <p>Price: <input type="text" placeholder="-- FCFA"></p>
                 <p>Stock: <input type="text" placeholder="--"></p>
                 <div class="qty">
-                    <button class="minus" onclick="changeQty(this,-1)">−</button>
+                    <button onclick="changeQty(this,-1)">−</button>
                     <input type="text" value="1" readonly>
-                    <button class="plus" onclick="changeQty(this,1)">+</button>
+                    <button onclick="changeQty(this,1)">+</button>
                 </div>
                 <button class="reserve">Reserve</button>
             </div>
@@ -281,7 +267,7 @@
 function changeQty(btn, change) {
     let input = btn.parentElement.querySelector("input[type=text]");
     let value = parseInt(input.value) + change;
-    if (value < 1 || isNaN(value)) value = 1;  // minimum 1
+    if (value < 1 || isNaN(value)) value = 1;
     input.value = value;
 }
 </script>
