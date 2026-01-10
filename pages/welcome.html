@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gazio - Your Trusted Gas Marketplace</title>
+
+    <style>
+        /* Reset & Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: #f9f9f9;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Header */
+        header {
+            background-color: black;
+            color: #fff;
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            font-size: 28px;
+        }
+
+        nav a {
+            margin-left: 20px;
+            font-weight: bold;
+            color: #fff;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: cyan;
+        }
+
+        .signup-btn {
+            padding: 10px 20px;
+            background-color: #27ae60;
+            color: #fff;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .signup-btn:hover {
+            background-color: #2ecc71;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 80px 20px 25px; /* bottom padding reduced */
+            background: linear-gradient(to right, blue, rgb(82, 190, 190));
+            color: white;
+        }
+
+        .hero h2 {
+            font-size: 42px;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            font-size: 20px;
+            margin: 0 auto;
+            max-width: 900px;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 25px 50px 80px; /* top padding reduced */
+            text-align: center;
+            background: linear-gradient(to right, blue, rgb(82, 190, 190));
+        }
+
+        .features h3 {
+            font-size: 32px;
+            margin-bottom: 40px;
+            color: #2c3e50;
+        }
+
+        .feature-cards {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        .card {
+            background-color: #f6f9fa;
+            padding: 35px;
+            border-radius: 12px;
+            width: 340px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .card h4 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #e67e22;
+        }
+
+        .card p {
+            font-size: 16px;
+            color: #555;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #070707;
+            color: #f7f4f4;
+            text-align: center;
+            padding: 30px;
+        }
+
+        footer p {
+            font-size: 16px;
+        }
+
+        /* Responsive */
+        @media(max-width: 768px){
+            .feature-cards {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            nav {
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header>
+        <h1>Gazio</h1>
+        <nav>
+            <a href="/about">About</a>
+            <a href="/contact.html">Contact</a>
+            <a href="/Sign-up.html" class="signup-btn">Sign Up</a>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h2>Your Trusted Gas Marketplace</h2>
+        <p>
+           The platform is thoughtfully designed to deliver seamless
+            and stress-free gas transactions, making the process of buying and 
+            selling gas simpler, faster, and more reliable than ever before.
+             Gazio brings transparency and trust to the forefront by connecting 
+             users with verified vendors, ensuring safety, quality, and fair 
+             pricing at all times. With a secure, easy-to-navigate interface,
+             users of all ages and technical backgrounds can confidently access 
+             the services they need without confusion or delay. Whether you are 
+             an individual managing household gas needs or a business seeking 
+             efficient and dependable supply solutions, Gazio is built to support
+              you every step of the way. By combining convenience, security, and 
+              efficiency in one trusted marketplace, Gazio creates a smooth, dependable,
+               and enjoyable experience that empowers users and transforms 
+               how gas procurement is done.
+        </p>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="about">
+        <h3>Why Choose Gazio?</h3>
+
+        <div class="feature-cards">
+
+            <div class="card">
+                <h4>✅ Verified Vendors</h4>
+                <p>
+                    All gas sellers are carefully verified to ensure customers receive safe, authentic,
+                    and high-quality products every time.
+                </p>
+            </div>
+
+            <div class="card">
+                <h4>🔒 Secure Transactions</h4>
+                <p>
+                    Our platform guarantees secure and transparent transactions, allowing users to buy
+                    and sell gas confidently without fear of fraud or hidden charges.
+                </p>
+            </div>
+
+            <div class="card">
+                <h4>⚡ Convenience & Efficiency</h4>
+                <p>
+                    Easily locate vendors, communicate effortlessly, and complete gas purchases quickly
+                    through a streamlined and user-friendly experience.
+                </p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 Gazio. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>

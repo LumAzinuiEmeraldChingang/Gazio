@@ -9,7 +9,8 @@ const port = 3000;
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, '.'))); // Serve static files from current directory
+app.use(express.static(path.join(__dirname, '.'))); // Serve static files from root
+app.use(express.static(path.join(__dirname, 'pages'))); // Serve HTML files from pages
 
 // Database setup
 const db = new sqlite3.Database('./users.db', (err) => {
@@ -32,13 +33,30 @@ const db = new sqlite3.Database('./users.db', (err) => {
   }
 });
 
+// Image database
+const imageDb = new sqlite3.Database('./image.db', (err) => {
+  if (err) {
+    console.error('Error opening image database:', err.message);
+  } else {
+    console.log('Connected to the image database.');
+  }
+});
+
 // Routes
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'home.html'));
+  res.sendFile(path.join(__dirname, 'pages', 'welcome.html'));
+});
+
+app.get('/home', (req, res) => {
+  res.sendFile(path.join(__dirname, 'pages', 'home.html'));
+});
+
+app.get('/about', (req, res) => {
+  res.sendFile(path.join(__dirname, 'pages', 'about.html'));
 });
 
 app.get('/signup', (req, res) => {
-  res.sendFile(path.join(__dirname, 'Sign-up.html'));
+  res.sendFile(path.join(__dirname, 'pages', 'Sign-up.html'));
 });
 
 app.post('/signup', (req, res) => {
@@ -69,7 +87,7 @@ app.post('/login', (req, res) => {
     }
     if (row) {
       // Login successful, redirect to home
-      res.redirect('/');
+      res.redirect('/home');
     } else {
       res.redirect('/login?error=invalid');
     }
@@ -78,10 +96,25 @@ app.post('/login', (req, res) => {
 
 // Add other routes as needed
 app.get('/login', (req, res) => {
-  res.sendFile(path.join(__dirname, 'Login.html'));
+  res.sendFile(path.join(__dirname, 'pages', 'Login.html'));
 });
 
 // And so on for other pages
+
+app.get('/image/:name', (req, res) => {
+  const name = req.params.name;
+  imageDb.get(`SELECT data FROM images WHERE name = ?`, [name], (err, row) => {
+    if (err) {
+      return res.status(500).send('Error fetching image');
+    }
+    if (row) {
+      res.setHeader('Content-Type', 'image/jpeg'); // Assuming JPEG
+      res.send(row.data);
+    } else {
+      res.status(404).send('Image not found');
+    }
+  });
+});
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
