@@ -151,6 +151,7 @@ body {
     padding: 6px 8px;
     border-radius: 6px;
     font-size: 0.85rem;
+    position: relative;
 }
 .price-box {
     font-weight: bold;
@@ -160,6 +161,13 @@ body {
 }
 .out {
     color: red;
+}
+
+/* ===== TIMER ===== */
+.tx-timer {
+    font-weight: bold;
+    color: #1c3b68;
+    margin-left: 6px;
 }
 
 /* ===== BOTTOM DASHBOARD ===== */
@@ -222,14 +230,6 @@ body {
                         <span class="status-text ${tx.status == 'Cancelled' ? 'out' : (tx.status == 'Successful' ? 'stock' : '')}">
                             ${tx.status}
                         </span>
-
-                        <c:if test="${tx.status == 'Pending'}">
-                            <button class="edit-btn cancel-btn" 
-                                    data-txid="${tx.id}" 
-                                    style="padding:4px 10px; margin-left:8px;">
-                                Cancel
-                            </button>
-                        </c:if>
                     </div>
                 </c:forEach>
             </c:if>
@@ -244,7 +244,6 @@ body {
 
 <!-- ===== POSTS ===== -->
 <div id="posts">
-    <!-- Keep all your posts code as-is, repeated gas cards -->
     <div class="gas-card">
         <div class="gas-bottle gaz">
             <img src="/static/images/gas-placeholder.png" alt="Gas">
@@ -257,55 +256,7 @@ body {
             <div class="info-box {{stock_class}}">{{stock_status}}</div>
         </div>
     </div>
-    <div class="gas-card">
-        <div class="gas-bottle gaz">
-            <img src="/static/images/gas-placeholder.png" alt="Gas">
-            <div class="gas-name">{{gas_brand}}</div>
-        </div>
-        <div class="details">
-            <div class="info-box">Available: {{available}}</div>
-            <div class="info-box price-box">Price: {{price}} CFA</div>
-            <div class="info-box">Quarter: {{quarter}}</div>
-            <div class="info-box {{stock_class}}">{{stock_status}}</div>
-        </div>
-    </div>
-    <div class="gas-card">
-        <div class="gas-bottle gaz">
-            <img src="/static/images/gas-placeholder.png" alt="Gas">
-            <div class="gas-name">{{gas_brand}}</div>
-        </div>
-        <div class="details">
-            <div class="info-box">Available: {{available}}</div>
-            <div class="info-box price-box">Price: {{price}} CFA</div>
-            <div class="info-box">Quarter: {{quarter}}</div>
-            <div class="info-box {{stock_class}}">{{stock_status}}</div>
-        </div>
-    </div>
-    <div class="gas-card">
-        <div class="gas-bottle gaz">
-            <img src="/static/images/gas-placeholder.png" alt="Gas">
-            <div class="gas-name">{{gas_brand}}</div>
-        </div>
-        <div class="details">
-            <div class="info-box">Available: {{available}}</div>
-            <div class="info-box price-box">Price: {{price}} CFA</div>
-            <div class="info-box">Quarter: {{quarter}}</div>
-            <div class="info-box {{stock_class}}">{{stock_status}}</div>
-        </div>
-    </div>
-    <div class="gas-card">
-        <div class="gas-bottle gaz">
-            <img src="/static/images/gas-placeholder.png" alt="Gas">
-            <div class="gas-name">{{gas_brand}}</div>
-        </div>
-        <div class="details">
-            <div class="info-box">Available: {{available}}</div>
-            <div class="info-box price-box">Price: {{price}} CFA</div>
-            <div class="info-box">Quarter: {{quarter}}</div>
-            <div class="info-box {{stock_class}}">{{stock_status}}</div>
-        </div>
-    </div>
-    <!-- Repeat as needed for more gas cards -->
+    <!-- Repeat gas-card as needed -->
 </div>
 
 <!-- ===== BOTTOM FIXED DASHBOARD ===== -->
@@ -330,22 +281,78 @@ function showTransactions() {
     document.querySelectorAll(".dash-tab")[0].classList.remove("active");
 }
 
-// Cancel button logic
+// ===== PENDING TRANSACTION TIMER & BUTTONS =====
 document.addEventListener('DOMContentLoaded', function() {
-    const buttons = document.querySelectorAll('.cancel-btn');
-    buttons.forEach(btn => {
-        btn.addEventListener('click', function() {
-            const txId = this.getAttribute('data-txid');
-            const txDiv = document.getElementById(`tx-${txId}`);
-            const statusSpan = txDiv.querySelector('.status-text');
+    document.querySelectorAll('.status-text').forEach(statusSpan => {
+        if (statusSpan.textContent.trim() === 'Pending') {
+            const txDiv = statusSpan.closest('.info-box');
 
-            // Only cancel if pending
-            if (statusSpan.textContent.trim() === 'Pending') {
+            // Create timer element
+            const timer = document.createElement('span');
+            timer.className = 'tx-timer';
+            txDiv.appendChild(timer);
+
+            // 5-hour countdown in milliseconds
+            let remaining = 5 * 60 * 60 * 1000; 
+            const interval = setInterval(() => {
+                if (remaining <= 0) {
+                    clearInterval(interval);
+                    timer.textContent = 'Time expired';
+                    return;
+                }
+                let hours = Math.floor(remaining / (1000 * 60 * 60));
+                let minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+                let seconds = Math.floor((remaining % (1000 * 60)) / 1000);
+                timer.textContent = `${hours}h ${minutes}m ${seconds}s`;
+                remaining -= 1000;
+            }, 1000);
+
+            // Create Collected button
+            const collectBtn = document.createElement('button');
+            collectBtn.textContent = 'Collected';
+            collectBtn.className = 'edit-btn';
+            collectBtn.style.padding = '4px 10px';
+            collectBtn.style.marginLeft = '6px';
+            collectBtn.style.backgroundColor = '#5cb85c';
+
+            // Create Cancel button
+            const cancelBtn = document.createElement('button');
+            cancelBtn.textContent = 'Cancel';
+            cancelBtn.className = 'edit-btn';
+            cancelBtn.style.padding = '4px 10px';
+            cancelBtn.style.marginLeft = '6px';
+            cancelBtn.style.backgroundColor = '#d9534f';
+
+            // Collected click logic
+            collectBtn.addEventListener('click', function () {
+                statusSpan.textContent = 'Successful';
+                statusSpan.className = 'status-text stock';
+                collectBtn.remove();
+                cancelBtn.remove();
+                timer.remove();
+                clearInterval(interval);
+                txDiv.style.transition = 'opacity 0.6s';
+                txDiv.style.opacity = '0';
+                setTimeout(() => txDiv.style.display = 'none', 600);
+            });
+
+            // Cancel click logic
+            cancelBtn.addEventListener('click', function () {
                 statusSpan.textContent = 'Cancelled';
                 statusSpan.className = 'status-text out';
-                this.remove();
-            }
-        });
+                collectBtn.remove();
+                cancelBtn.remove();
+                timer.remove();
+                clearInterval(interval);
+                txDiv.style.transition = 'opacity 0.6s';
+                txDiv.style.opacity = '0';
+                setTimeout(() => txDiv.style.display = 'none', 600);
+            });
+
+            // Append buttons to transaction
+            txDiv.appendChild(collectBtn);
+            txDiv.appendChild(cancelBtn);
+        }
     });
 });
 </script>
