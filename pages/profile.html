@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gas Profile - {{username}}</title>
+
+<style>
+/* ===== GLOBAL ===== */
+* {
+    box-sizing: border-box;
+}
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #1697ec, #4dc9f7);
+    padding-bottom: 60px; /* reserve space for bottom dashboard */
+}
+
+/* ===== HEADER ===== */
+.header {
+    position: sticky;
+    top: 0;
+    background: linear-gradient(135deg, #1697ec, #4dc9f7);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    z-index: 10;
+}
+.icon {
+    font-size: 24px;
+    cursor: pointer;
+    user-select: none;
+    color: black;
+}
+
+/* ===== PROFILE ===== */
+.profile {
+    text-align: center;
+    margin-top: 10px;
+}
+.avatar {
+    width: 28vw;
+    max-width: 120px;
+    height: 28vw;
+    max-height: 120px;
+    border-radius: 50%;
+    background-color: #ddd;
+    margin: auto;
+}
+.username {
+    font-size: 1.4rem;
+    font-weight: bold;
+    margin-top: 8px;
+}
+.edit-btn {
+    margin-top: 6px;
+    padding: 8px 22px;
+    background-color: #5bbcd6;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* ===== DASHBOARD TABS ===== */
+.dashboard-tabs {
+    display: flex;
+    margin: 15px;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+}
+.dash-tab {
+    flex: 1;
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+    cursor: pointer;
+    background: #f2f2f2;
+}
+.dash-tab.active {
+    background: #5bbcd6;
+    color: white;
+}
+
+/* ===== GAS CARD ===== */
+.gas-card {
+    background-color: white;
+    border-radius: 14px;
+    padding: 12px;
+    margin: 15px;
+    display: flex;
+    gap: 12px;
+    width: calc(100% - 30px);
+}
+
+/* ===== GAS BOTTLE ===== */
+.gas-bottle {
+    width: 22vw;
+    max-width: 95px;
+    height: 34vw;
+    max-height: 150px;
+    border-radius: 22px 22px 14px 14px;
+    position: relative;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+.gas-bottle::before {
+    content: "";
+    width: 40%;
+    height: 10%;
+    background-color: #444;
+    position: absolute;
+    top: -10%;
+    left: 30%;
+    border-radius: 4px;
+    z-index: 2;
+}
+.gas-bottle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.gas-name {
+    position: absolute;
+    bottom: 10%;
+    width: 100%;
+    font-size: 0.8rem;
+    z-index: 3;
+}
+
+/* ===== BRAND COLORS ===== */
+.gaz { background-color: #1c3b68; }
+
+/* ===== INFO BOXES ===== */
+.details {
+    flex: 1;
+    display: grid;
+    gap: 6px;
+}
+.info-box {
+    background-color: #f2f2f2;
+    padding: 6px 8px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    position: relative;
+}
+.price-box {
+    font-weight: bold;
+}
+.stock {
+    color: rgb(44, 93, 190);
+}
+.out {
+    color: red;
+}
+
+/* ===== TIMER ===== */
+.tx-timer {
+    font-weight: bold;
+    color: #1c3b68;
+    margin-left: 6px;
+}
+
+/* ===== BOTTOM DASHBOARD ===== */
+.bottom-dashboard {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #ffffffdd;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    border-top: 1px solid #ccc;
+    z-index: 100;
+}
+.bottom-dashboard .dash-icon {
+    font-size: 24px;
+    color: #1c3b68;
+    text-decoration: none;
+}
+.bottom-dashboard .dash-icon:active {
+    opacity: 0.6;
+}
+</style>
+</head>
+
+<body>
+
+<!-- ===== HEADER ===== -->
+<div class="header">
+    <a href="javascript:history.back()" class="icon">←</a>
+    <a href="/settings" class="icon">⚙</a>
+</div>
+
+<!-- ===== PROFILE ===== -->
+<div class="profile">
+    <div class="avatar"></div>
+    <div class="username">{{username}}</div>
+    <button class="edit-btn">Edit</button>
+</div>
+
+<!-- ===== DASHBOARD TABS ===== -->
+<div class="dashboard-tabs">
+    <div class="dash-tab active" onclick="showPosts()">Posts</div>
+    <div class="dash-tab" onclick="showTransactions()">Transactions</div>
+</div>
+
+<!-- ===== TRANSACTIONS ===== -->
+<div id="transactions" style="display:none;">
+    <div class="gas-card">
+        <div class="details" style="width:100%;">
+            <div class="info-box price-box">Transaction History</div>
+
+            <c:if test="${not empty transactions}">
+                <c:forEach var="tx" items="${transactions}">
+                    <div class="info-box" id="tx-${tx.id}">
+                        Date: ${tx.date} | Gas: ${tx.gasBrand} | Amount: ${tx.amount} CFA
+                        <br>
+                        Status: 
+                        <span class="status-text ${tx.status == 'Cancelled' ? 'out' : (tx.status == 'Successful' ? 'stock' : '')}">
+                            ${tx.status}
+                        </span>
+                    </div>
+                </c:forEach>
+            </c:if>
+
+            <c:if test="${empty transactions}">
+                <div class="info-box out">No transactions found</div>
+            </c:if>
+
+        </div>
+    </div>
+</div>
+
+<!-- ===== POSTS ===== -->
+<div id="posts">
+    <div class="gas-card">
+        <div class="gas-bottle gaz">
+            <img src="/static/images/gas-placeholder.png" alt="Gas">
+            <div class="gas-name">{{gas_brand}}</div>
+        </div>
+        <div class="details">
+            <div class="info-box">Available: {{available}}</div>
+            <div class="info-box price-box">Price: {{price}} CFA</div>
+            <div class="info-box">Quarter: {{quarter}}</div>
+            <div class="info-box {{stock_class}}">{{stock_status}}</div>
+        </div>
+    </div>
+    <div id="posts">
+    <div class="gas-card">
+        <div class="gas-bottle gaz">
+            <img src="/static/images/gas-placeholder.png" alt="Gas">
+            <div class="gas-name">{{gas_brand}}</div>
+        </div>
+        <div class="details">
+            <div class="info-box">Available: {{available}}</div>
+            <div class="info-box price-box">Price: {{price}} CFA</div>
+            <div class="info-box">Quarter: {{quarter}}</div>
+            <div class="info-box {{stock_class}}">{{stock_status}}</div>
+        </div>
+    </div>
+    <div id="posts">
+    <div class="gas-card">
+        <div class="gas-bottle gaz">
+            <img src="/static/images/gas-placeholder.png" alt="Gas">
+            <div class="gas-name">{{gas_brand}}</div>
+        </div>
+        <div class="details">
+            <div class="info-box">Available: {{available}}</div>
+            <div class="info-box price-box">Price: {{price}} CFA</div>
+            <div class="info-box">Quarter: {{quarter}}</div>
+            <div class="info-box {{stock_class}}">{{stock_status}}</div>
+        </div>
+    </div>
+    <div id="posts">
+    <div class="gas-card">
+        <div class="gas-bottle gaz">
+            <img src="/static/images/gas-placeholder.png" alt="Gas">
+            <div class="gas-name">{{gas_brand}}</div>
+        </div>
+        <div class="details">
+            <div class="info-box">Available: {{available}}</div>
+            <div class="info-box price-box">Price: {{price}} CFA</div>
+            <div class="info-box">Quarter: {{quarter}}</div>
+            <div class="info-box {{stock_class}}">{{stock_status}}</div>
+        </div>
+    </div>
+    <div id="posts">
+    <div class="gas-card">
+        <div class="gas-bottle gaz">
+            <img src="/static/images/gas-placeholder.png" alt="Gas">
+            <div class="gas-name">{{gas_brand}}</div>
+        </div>
+        <div class="details">
+            <div class="info-box">Available: {{available}}</div>
+            <div class="info-box price-box">Price: {{price}} CFA</div>
+            <div class="info-box">Quarter: {{quarter}}</div>
+            <div class="info-box {{stock_class}}">{{stock_status}}</div>
+        </div>
+    </div>
+    <!-- Repeat gas-card as needed -->
+</div>
+
+<!-- ===== BOTTOM FIXED DASHBOARD ===== -->
+<div class="bottom-dashboard">
+    <a href="/home" class="dash-icon">⌂</a>
+    <a href="javascript:location.reload()" class="dash-icon">👤</a>
+</div>
+
+<!-- ===== SCRIPTS ===== -->
+<script>
+function showPosts() {
+    document.getElementById("posts").style.display = "block";
+    document.getElementById("transactions").style.display = "none";
+    document.querySelectorAll(".dash-tab")[0].classList.add("active");
+    document.querySelectorAll(".dash-tab")[1].classList.remove("active");
+}
+
+function showTransactions() {
+    document.getElementById("posts").style.display = "none";
+    document.getElementById("transactions").style.display = "block";
+    document.querySelectorAll(".dash-tab")[1].classList.add("active");
+    document.querySelectorAll(".dash-tab")[0].classList.remove("active");
+}
+
+// ===== PENDING TRANSACTION TIMER & BUTTONS =====
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.status-text').forEach(statusSpan => {
+        if (statusSpan.textContent.trim() === 'Pending') {
+            const txDiv = statusSpan.closest('.info-box');
+
+            // Create timer element
+            const timer = document.createElement('span');
+            timer.className = 'tx-timer';
+            txDiv.appendChild(timer);
+
+            // 5-hour countdown in milliseconds
+            let remaining = 5 * 60 * 60 * 1000; 
+            const interval = setInterval(() => {
+                if (remaining <= 0) {
+                    clearInterval(interval);
+                    timer.textContent = 'Time expired';
+                    return;
+                }
+                let hours = Math.floor(remaining / (1000 * 60 * 60));
+                let minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+                let seconds = Math.floor((remaining % (1000 * 60)) / 1000);
+                timer.textContent = `${hours}h ${minutes}m ${seconds}s`;
+                remaining -= 1000;
+            }, 1000);
+
+            // Create Collected button
+            const collectBtn = document.createElement('button');
+            collectBtn.textContent = 'Collected';
+            collectBtn.className = 'edit-btn';
+            collectBtn.style.padding = '4px 10px';
+            collectBtn.style.marginLeft = '6px';
+            collectBtn.style.backgroundColor = '#5cb85c';
+
+            // Create Cancel button
+            const cancelBtn = document.createElement('button');
+            cancelBtn.textContent = 'Cancel';
+            cancelBtn.className = 'edit-btn';
+            cancelBtn.style.padding = '4px 10px';
+            cancelBtn.style.marginLeft = '6px';
+            cancelBtn.style.backgroundColor = '#d9534f';
+
+            // Collected click logic
+            collectBtn.addEventListener('click', function () {
+                statusSpan.textContent = 'Successful';
+                statusSpan.className = 'status-text stock';
+                collectBtn.remove();
+                cancelBtn.remove();
+                timer.remove();
+                clearInterval(interval);
+                txDiv.style.transition = 'opacity 0.6s';
+                txDiv.style.opacity = '0';
+                setTimeout(() => txDiv.style.display = 'none', 600);
+            });
+
+            // Cancel click logic
+            cancelBtn.addEventListener('click', function () {
+                statusSpan.textContent = 'Cancelled';
+                statusSpan.className = 'status-text out';
+                collectBtn.remove();
+                cancelBtn.remove();
+                timer.remove();
+                clearInterval(interval);
+                txDiv.style.transition = 'opacity 0.6s';
+                txDiv.style.opacity = '0';
+                setTimeout(() => txDiv.style.display = 'none', 600);
+            });
+
+            // Append buttons to transaction
+            txDiv.appendChild(collectBtn);
+            txDiv.appendChild(cancelBtn);
+        }
+    });
+});
+</script>
+
+</body>
+</html
