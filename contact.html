@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Contact Us — Gazio</title>
 
   <style>
@@ -12,33 +12,40 @@
       --muted:#6b7280;
       --card:#ffffff;
       --bg:#f7f9fb;
-      --max:1100px
+      --max:1100px;
     }
 
     *{box-sizing:border-box}
 
     body{
-      font-family:Arial, Helvetica, sans-serif;
-      background:var(--bg);
-      color:var(--brand);
-      margin:0;
-      padding:28px
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--brand);
+      margin: 0;
+      padding: 28px;
     }
 
     .wrap{
-      max-width:var(--max);
-      margin:0 auto
+      max-width: var(--max);
+      margin: 0 auto;
     }
 
     header{
       display:flex;
+      justify-content:space-between;
       align-items:center;
-      padding:12px 0
+      padding:12px 0;
     }
 
     header .brand{
       font-weight:bold;
-      font-size:18px
+      font-size:18px;
+    }
+
+    header a{
+      color: blue;
+      text-decoration: underline;
+      font-size:14px;
     }
 
     .hero{
@@ -47,10 +54,21 @@
       border-radius:12px;
       box-shadow:0 6px 18px rgba(0,0,0,0.06);
       display:flex;
-      gap:24px
+      gap:24px;
     }
 
     .hero .left{flex:1}
+
+    .hero .right{
+      font-size:14px;
+      color:var(--muted);
+    }
+
+    .hero .right p{
+      margin:0;
+      line-height:1.4;
+    }
+
     .hero h1{margin:0 0 10px 0;font-size:24px}
     .hero p{margin:0;color:var(--muted);line-height:1.5}
 
@@ -58,21 +76,21 @@
       display:grid;
       grid-template-columns:1fr 360px;
       gap:18px;
-      margin-top:20px
+      margin-top:20px;
     }
 
     .card{
       background:var(--card);
       padding:20px;
       border-radius:10px;
-      box-shadow:0 6px 18px rgba(0,0,0,0.04)
+      box-shadow:0 6px 18px rgba(0,0,0,0.04);
     }
 
     label{
       display:block;
       font-size:13px;
       margin-bottom:6px;
-      color:var(--muted)
+      color:var(--muted);
     }
 
     input, textarea{
@@ -80,19 +98,19 @@
       padding:10px;
       border:1px solid #e5e7eb;
       border-radius:8px;
-      font-size:14px
+      font-size:14px;
     }
 
     textarea{
       min-height:120px;
-      resize:vertical
+      resize:vertical;
     }
 
     .send-row{
       display:flex;
       align-items:center;
       gap:10px;
-      margin-top:12px
+      margin-top:12px;
     }
 
     button{
@@ -102,35 +120,44 @@
       padding:10px 18px;
       border-radius:8px;
       font-weight:600;
-      cursor:pointer
+      cursor:pointer;
     }
 
-    /* ✅ EMAIL LINK — BLUE & UNDERLINED */
     .send-row a{
-      color:blue;
-      text-decoration:underline
+      color: blue;
+      text-decoration: underline;
     }
 
     .send-row span{
       font-size:14px;
-      color:var(--muted)
+      color:var(--muted);
     }
 
     .small{
       font-size:13px;
       color:var(--muted);
-      margin-top:6px
+      margin-top:6px;
     }
 
-    .info-list p{
-      margin:8px 0;
-      color:var(--muted)
+    /* ✅ SOCIAL LINKS */
+    .social-link{
+      color:inherit;
+      text-decoration:none;
+      cursor:pointer;
     }
 
-    .social a{
-      margin-right:10px;
+    /* ✅ JOINED CONTACT DETAILS (BOTTOM) */
+    .contact-info p{
+      margin:0;
+      line-height:1.4;
+      font-size:14px;
       color:var(--muted);
-      text-decoration:none
+    }
+
+    /* ✅ SMALLER BUSINESS HOURS TEXT */
+    .business-hours{
+      font-size:13px;
+      color:var(--muted);
     }
 
     @media(max-width:900px){
@@ -145,6 +172,7 @@
 
   <header>
     <div class="brand">Gazio</div>
+    <a href="index.html">Home</a>
   </header>
 
   <section class="hero">
@@ -157,15 +185,14 @@
     </div>
 
     <div class="right">
-      <p><strong>Email:</strong> Luminas237@gmail.com</p>
       <p><strong>Phone:</strong> +237 6 81 06 55 36</p>
+      <p><strong>Email:</strong> Luminas237@gmail.com</p>
       <p><strong>Office:</strong> 123 Market Street, Yaounde, Cameroon</p>
     </div>
   </section>
 
   <div class="contact-grid">
     <div class="card">
-
       <form id="contactForm">
 
         <label>Your name</label>
@@ -180,7 +207,6 @@
         <label style="margin-top:12px">Message</label>
         <textarea placeholder="How can we help you?" required></textarea>
 
-        <!-- ✅ SAME LINE LIKE YOUR FRIEND -->
         <div class="send-row">
           <button type="submit">Send message</button>
           <span>
@@ -194,28 +220,31 @@
         </p>
 
       </form>
-
     </div>
 
-    <aside class="card info-list">
+    <!-- ✅ BOTTOM CARD FIXED -->
+    <aside class="card">
       <h3>Contact Details</h3>
-      <p><strong>Email:</strong> Luminas237@gmail.com</p>
-      <p><strong>Phone:</strong> +237 6 81 06 55 36</p>
-      <p><strong>Office:</strong> 123 Market Street, Yaounde, Cameroon</p>
+
+      <div class="contact-info">
+        <p><strong>Email:</strong> Luminas237@gmail.com</p>
+        <p><strong>Phone:</strong> +237 6 81 06 55 36</p>
+        <p><strong>Office:</strong> 123 Market Street, Yaounde, Cameroon</p>
+      </div>
 
       <h4>Business Hours</h4>
-      <p class="small">
+      <p class="business-hours">
         Mon — Fri: 08:00 — 18:00<br>
         Sat: 09:00 — 13:00<br>
         Sun: Closed
       </p>
 
       <h4>Follow us</h4>
-      <div class="social">
-        <a href="#">Twitter</a>
-        <a href="#">Facebook</a>
-        <a href="#">LinkedIn</a>
-      </div>
+      <p>
+        <a href="#" class="social-link">Twitter</a> &nbsp;
+        <a href="#" class="social-link">Facebook</a> &nbsp;
+        <a href="#" class="social-link">LinkedIn</a>
+      </p>
     </aside>
   </div>
 
@@ -245,3 +274,9 @@
 
 </body>
 </html>
+
+
+
+
+
+
