@@ -2,111 +2,102 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Gas</title>
-    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: lightskyblue;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 450px;
+            background: white;
+            padding: 25px;
+            margin: 40px auto;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+
+        .profile-section {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        #profilePreview {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #ccc;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        #gasPreview {
+            display: block;
+            margin: 15px auto;
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+        }
+
+        button {
+            width: 48%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .update {
+            background-color: darkblue;
+            color: white;
+        }
+
+        .cancel {
+            background-color: red;
+            color: white;
+        }
+    </style>
 </head>
-<style>
-/* GENERAL PAGE */
-body {
-    font-family: Arial, sans-serif;
-    background-color: lightskyblue;
-    margin: 0;
-    padding: 20px;
-}
 
-/* MAIN CONTAINER */
-.container {
-    max-width: 450px;
-    background: white;
-    padding: 25px;
-    margin: 40px auto;
-    border-radius: 10px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.1);
-}
-
-/* PROFILE SECTION */
-.profile-section {
-    text-align: center;
-    margin-bottom: 25px;
-}
-
-#profilePreview {
-    width: 90px;
-    height: 90px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #ccc;
-    margin-bottom: 10px;
-}
-
-/* TITLE */
-h2 {
-    text-align: center;
-    color: #333;
-}
-
-/* LABELS */
-label {
-    display: block;
-    margin-top: 15px;
-    font-weight: bold;
-    color: #555;
-}
-
-/* INPUTS */
-input, select {
-    width: 100%;
-    padding: 8px;
-    margin-top: 5px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-/* GAS IMAGE */
-#gasPreview {
-    display: block;
-    margin: 15px auto;
-    width: 120px;
-    height: 120px;
-    object-fit: cover;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-}
-
-/* BUTTONS */
-.buttons {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 25px;
-}
-
-button {
-    width: 48%;
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-/* UPDATE */
-button.update {
-    background-color: darkblue;
-    color: white;
-}
-
-/* CANCEL */
-button.cancel {
-    background-color: red;
-    color: white;
-}
-</style>
 <body>
 
 <div class="container">
 
-    <!-- PROFILE SECTION (TOP) -->
     <div class="profile-section">
         <img id="profilePreview" src="profile-default.png" alt="Profile Picture">
         <label>Change Profile Picture</label>
@@ -115,7 +106,6 @@ button.cancel {
 
     <h2>Edit Gas Information</h2>
 
-    <!-- GAS IMAGE -->
     <img id="gasPreview" src="gas-default.png" alt="Gas Bottle">
 
     <label>Change Gas Image</label>
@@ -123,6 +113,9 @@ button.cancel {
 
     <label>Name</label>
     <input type="text" id="name" value="John Doe">
+
+    <label>Phone Number</label>
+    <input type="tel" id="phone" placeholder="Enter phone number">
 
     <label>Gas Brand</label>
     <select id="brand">
@@ -147,43 +140,45 @@ button.cancel {
 
 </div>
 
-<script>// PROFILE IMAGE
-const profileInput = document.getElementById("profileInput");
-const profilePreview = document.getElementById("profilePreview");
+<script>
+    const profileInput = document.getElementById("profileInput");
+    const profilePreview = document.getElementById("profilePreview");
 
-// GAS IMAGE
-const gasInput = document.getElementById("gasInput");
-const gasPreview = document.getElementById("gasPreview");
+    const gasInput = document.getElementById("gasInput");
+    const gasPreview = document.getElementById("gasPreview");
 
-// BUTTONS
-const updateBtn = document.getElementById("updateBtn");
-const cancelBtn = document.getElementById("cancelBtn");
+    const updateBtn = document.getElementById("updateBtn");
+    const cancelBtn = document.getElementById("cancelBtn");
 
-// Profile image preview
-profileInput.addEventListener("change", function () {
-    const file = this.files[0];
-    if (file) {
-        profilePreview.src = URL.createObjectURL(file);
-    }
-});
+    profileInput.addEventListener("change", function () {
+        const file = this.files[0];
+        if (file) {
+            profilePreview.src = URL.createObjectURL(file);
+        }
+    });
 
-// Gas image preview
-gasInput.addEventListener("change", function () {
-    const file = this.files[0];
-    if (file) {
-        gasPreview.src = URL.createObjectURL(file);
-    }
-});
+    gasInput.addEventListener("change", function () {
+        const file = this.files[0];
+        if (file) {
+            gasPreview.src = URL.createObjectURL(file);
+        }
+    });
 
-// Update button
-updateBtn.addEventListener("click", function () {
-    alert("Profile and gas details updated successfully!");
-});
+    updateBtn.addEventListener("click", function () {
+        const phone = document.getElementById("phone").value;
 
-// Cancel button
-cancelBtn.addEventListener("click", function () {
-    location.reload();
-});
+        if (phone === "") {
+            alert("Please enter a phone number.");
+            return;
+        }
+
+        alert("Gas details updated successfully.");
+    });
+
+    cancelBtn.addEventListener("click", function () {
+        location.reload();
+    });
 </script>
+
 </body>
 </html>
