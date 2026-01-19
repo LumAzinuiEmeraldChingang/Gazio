@@ -106,11 +106,14 @@
 
     <h2>Edit Gas Information</h2>
 
+<<<<<<< HEAD:new 1.html
     <img id="gasPreview" src="gas-default.png" alt="Gas Bottle">
 
     <label>Change Gas Image</label>
     <input type="file" accept="image/*" id="gasInput">
 
+=======
+>>>>>>> 4313029dddb1e002d7a3e8fb72e91f94bca31641:pages/edit.html
     <label>Name</label>
     <input type="text" id="name" value="John Doe">
 
@@ -167,6 +170,7 @@
     updateBtn.addEventListener("click", function () {
         const phone = document.getElementById("phone").value;
 
+<<<<<<< HEAD:new 1.html
         if (phone === "") {
             alert("Please enter a phone number.");
             return;
@@ -178,6 +182,12 @@
     cancelBtn.addEventListener("click", function () {
         location.reload();
     });
+=======
+// Cancel button
+cancelBtn.addEventListener("click", function () {
+    window.location.href = "profile.html";
+});
+>>>>>>> 4313029dddb1e002d7a3e8fb72e91f94bca31641:pages/edit.html
 </script>
 
 </body>

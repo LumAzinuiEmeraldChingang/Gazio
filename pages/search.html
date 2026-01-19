@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Search Page</title>
+
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #4dfdfd;
+  }
+  .top-bar {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    gap: 10px;
+    border-bottom: 1px solid #4dfdfd;
+  }
+  .back-arrow {
+    font-size: 22px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .search-input {
+    flex: 1;
+    padding: 10px;
+    font-size: 16px;
+    width: 100%;
+  }
+  .results {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+  }
+  .result-item {
+    padding: 12px;
+    border-bottom: 1px solid #40e7f3;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="top-bar">
+  <span class="back-arrow" onclick="goBack()">←</span>
+  <input
+    type="text"
+    class="search-input"
+    placeholder="Search..."
+    onkeyup="searchData()"
+    id="searchInput"
+  >
+</div>
+
+<div class="results" id="results"></div>
+
+<script>
+async function searchData() {
+  const query = document.getElementsByTagName("searchInput").value;
+  const results = document.getElementsByTagName("results");
+  results.innerHTML = "";
+
+  if (query.trim() === "") return;
+
+  // 🔗 REAL DATABASE CALL
+  const response = await fetch(`/search?q=${query}`);
+  const data = await response.json();
+
+  data.forEach(item => {
+    const div = document.createElement("div");
+    div.className = "result-item";
+    div.textContent = item.name;
+    results.appendChild(div);
+  });
+}
+function goBack() {
+  window.history.back();
+}
+</script>
+</body>
+</html>
+
