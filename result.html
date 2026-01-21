@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Result Page</title>
+    <style>
+        body {
+            background-color: lightblue; /* keep original background */
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* HEADER: back button + title in one line */
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 20px;
+            background-color: lightblue; /* same as body */
+            border-bottom: 2px solid #4a90e2;
+        }
+
+        .back {
+            font-size: 20px;
+            text-decoration: none;
+            color: #1f4e79;
+            cursor: pointer;
+        }
+
+        .back:hover {
+            color: #0b2e4f;
+        }
+
+        .header h2 {
+            color: #1f4e79;
+            margin: 0;
+            font-size: 22px;
+        }
+
+        /* SEARCH BAR */
+        .search-area {
+            width: 90%;
+            max-width: 1000px;
+            margin: 20px auto;
+        }
+
+        .search-area input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            border: 2px solid #4a90e2;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        /* RESULTS AREA */
+        .results {
+            width: 90%;
+            max-width: 1000px;
+            margin: 20px auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            min-height: 200px; /* reserve space for results */
+        }
+    </style>
+</head>
+<body>
+
+<!-- HEADER WITH BACK AND TITLE -->
+<div class="header">
+    <a href="javascript:history.back()" class="back">⬅ </a>
+    <h2>Search Gas Bottles</h2>
+</div>
+
+<!-- SEARCH INPUT -->
+<div class="search-area">
+    <input type="text" placeholder="Type gas bottle name here...">
+</div>
+
+<!-- RESULTS AREA -->
+<div class="results" id="results">
+    <!-- Search results will appear here -->
+</div>
+
+</body>
+</html>
