@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gas Profile - {{username}}</title>
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
 /* ===== GLOBAL ===== */
 * {
@@ -172,24 +172,25 @@ body {
 
 /* ===== BOTTOM DASHBOARD ===== */
 .bottom-dashboard {
-    position: fixed;
+ position: fixed;
     bottom: 0;
-    left: 0;
     width: 100%;
-    background-color: #ffffffdd;
+    background-color: white;
     display: flex;
     justify-content: space-around;
-    padding: 10px 0;
+    padding: 8px 0;
     border-top: 1px solid #ccc;
-    z-index: 100;
 }
-.bottom-dashboard .dash-icon {
-    font-size: 24px;
-    color: #1c3b68;
-    text-decoration: none;
+
+.dash-icon {
+    text-align: center;
+    font-size: 12px;
+    color: #666;
+    cursor: pointer;
 }
-.bottom-dashboard .dash-icon:active {
-    opacity: 0.6;
+
+.dash-icon i {
+    font-size: 22px;
 }
 </style>
 </head>
@@ -248,12 +249,24 @@ body {
 
 <!-- ===== BOTTOM FIXED DASHBOARD ===== -->
 <div class="bottom-dashboard">
-    <a href="/home" class="dash-icon">⌂</a>
-    <a href="javascript:location.reload()" class="dash-icon">👤</a>
+    <div class="dash-icon" onclick="goHome()">
+        <i class="fa-solid fa-house"></i><br>Home
+    </div>
+    <div class="dash-icon" onclick="goProfile()">
+        <i class="fa-solid fa-user"></i><br>Profile
+    </div>
 </div>
 
 <!-- ===== SCRIPTS ===== -->
 <script>
+function goHome() {
+    window.location.href = "home.html";
+}
+
+function goProfile() {
+    window.location.href = "profile.html";
+}
+
 function showPosts() {
     document.getElementById("posts").style.display = "block";
     document.getElementById("transactions").style.display = "none";
