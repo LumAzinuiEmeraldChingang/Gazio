@@ -151,53 +151,11 @@ body {
 </header>
 
 <!-- MAIN CONTENT -->
-<main class="content">
+<main id="main-content" class="content">
     <h2>Available Sellers</h2>
-
-    <div class="user-card" onclick="location.href='sellersprofile.html'">
-        <img src="https://via.placeholder.com/150">
-        <div class="user-info">
-            <h3>Username Placeholder</h3>
-            <p>📍 Location Placeholder</p>
-            <p>📞 Contact Placeholder</p>
+        <div id="user-list">
+            <!-- dynamic seller cards will be inserted here when they have gas bottles -->
         </div>
-    </div>
-
-    <div class="user-card" onclick="location.href='sellersprofile.html'">
-        <img src="https://via.placeholder.com/150">
-        <div class="user-info">
-            <h3>Username Placeholder</h3>
-            <p>📍 Location Placeholder</p>
-            <p>📞 Contact Placeholder</p>
-        </div>
-    </div>
-
-    <div class="user-card" onclick="location.href='sellersprofile.html'">
-        <img src="https://via.placeholder.com/150">
-        <div class="user-info">
-            <h3>Username Placeholder</h3>
-            <p>📍 Location Placeholder</p>
-            <p>📞 Contact Placeholder</p>
-        </div>
-    </div>
-
-    <div class="user-card" onclick="location.href='sellersprofile.html'">
-        <img src="https://via.placeholder.com/150">
-        <div class="user-info">
-            <h3>Username Placeholder</h3>
-            <p>📍 Location Placeholder</p>
-            <p>📞 Contact Placeholder</p>
-        </div>
-    </div>
-
-    <div class="user-card" onclick="location.href='sellersprofile.html'">
-        <img src="https://via.placeholder.com/150">
-        <div class="user-info">
-            <h3>Username Placeholder</h3>
-            <p>📍 Location Placeholder</p>
-            <p>📞 Contact Placeholder</p>
-        </div>
-    </div>
 </main>
 
 <!-- BOTTOM NAV -->
@@ -227,6 +185,38 @@ document.querySelector('.search').addEventListener('keydown', function(event) {
     if (event.key === 'Enter') {
         window.location.href = 'search.html';
     }
+});
+</script>
+
+<script>
+// Show a user card only if the signed-in user has at least one bottle in edit.db
+document.addEventListener('DOMContentLoaded', function() {
+    const list = document.getElementById('user-list');
+    if (!list) return;
+    fetch('/profile-data').then(r => r.json()).then(data => {
+        if (!data) return;
+        // data.name is the signed-in username (from cookie)
+        // data.bottles is array
+        if (data.bottles && data.bottles.length > 0) {
+            // create a user-card at the top pointing to sellersprofile.html?user=<name>
+            const card = document.createElement('div');
+            card.className = 'user-card';
+            card.style.cursor = 'pointer';
+            card.onclick = () => { window.location.href = 'sellersprofile.html?user=' + encodeURIComponent(data.name); };
+            const img = document.createElement('img');
+            img.src = 'https://via.placeholder.com/150';
+            const info = document.createElement('div');
+            info.className = 'user-info';
+            const h3 = document.createElement('h3');
+            h3.textContent = data.name || 'You';
+            const loc = document.createElement('p'); loc.textContent = '📍 Location';
+            const phone = document.createElement('p'); phone.textContent = '📞 ' + ((data.bottles[0] && data.bottles[0].phone) || 'Contact');
+            info.appendChild(h3); info.appendChild(loc); info.appendChild(phone);
+            card.appendChild(img); card.appendChild(info);
+            // insert at top of list
+            list.insertBefore(card, list.firstChild);
+        }
+    }).catch(err => console.error('profile-data error', err));
 });
 </script>
 

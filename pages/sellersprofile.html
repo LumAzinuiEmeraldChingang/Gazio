@@ -157,6 +157,8 @@ body {
   text-align: left;
   background: none;
 }
+/* Available box */
+.available-box { }
 /* Make grid fit all devices without horizontal scroll */
 @media (max-width: 1250px) {
   .gas-card {
@@ -171,178 +173,16 @@ body {
   <div class="top-section">
     <div class="profile-left">Profile</div>
     <div style="flex:1;">
-      <div style="width:150px; height:20px; background:#e2e8f0; margin-bottom:4px; display:flex; align-items:center; justify-content:center; color:#64748b; font-size:10px;">Username</div>
-      <div style="width:100px; height:16px; background:#e2e8f0; margin-bottom:4px; display:flex; align-items:center; justify-content:center; color:#64748b; font-size:9px;">Location</div>
-      <div style="width:120px; height:16px; background:#e2e8f0; display:flex; align-items:center; justify-content:center; color:#64748b; font-size:9px;">Phone</div>
+      <div id="seller-username" style="width:150px; height:20px; background:#e2e8f0; margin-bottom:4px; display:flex; align-items:center; justify-content:center; color:#64748b; font-size:10px;">Username</div>
+      <div id="seller-location" style="width:100px; height:16px; background:#e2e8f0; margin-bottom:4px; display:flex; align-items:center; justify-content:center; color:#64748b; font-size:9px;">Location</div>
+      <div id="seller-phone" style="width:120px; height:16px; background:#e2e8f0; display:flex; align-items:center; justify-content:center; color:#64748b; font-size:9px;">Phone</div>
     </div>
   </div>
   <div class="gas-section">
     <h2>Available Gas Bottles</h2>
-    <div class="gas-grid">
-      <!-- 9 Cards for 3x3 Grid -->
-      <div class="gas-card">
-        <div class="gas-left">
-          <div class="gas-image">Image</div>
-          <div class="qty-box">
-            <button>-</button>
-            <input type="number" value="1" min="1">
-            <button>+</button>
-          </div>
-          <button class="reserve-btn">Reserve</button>
-        </div>
-        <div class="gas-right">
-        <div>Gas Name: gas name</div>
-          <div>Quantity Qty</div>
-          <div>Size: size</div>
-          <div>Price: price</div> 
-          <div class="available-text">Available</div>
-        </div>
-      </div>
-      <div class="gas-card">
-        <div class="gas-left">
-          <div class="gas-image">Image</div>
-          <div class="qty-box">
-            <button>-</button>
-            <input type="number" value="1" min="1">
-            <button>+</button>
-          </div>
-          <button class="reserve-btn">Reserve</button>
-        </div>
-        <div class="gas-right">
-       <div>Gas Name: gas name</div>
-          <div>Quantity Qty</div>
-          <div>Size: size</div>
-          <div>Price: price</div>
-          <div class="available-text">Available</div>
-        </div>
-      </div>
-      <div class="gas-card">
-        <div class="gas-left">
-          <div class="gas-image">Image</div>
-          <div class="qty-box">
-            <button>-</button>
-            <input type="number" value="1" min="1">
-            <button>+</button>
-          </div>
-          <button class="reserve-btn">Reserve</button>
-        </div>
-        <div class="gas-right">
-       <div>Gas Name: gas name</div>
-          <div>Quantity Qty</div>
-          <div>Size: size</div>
-          <div>Price: price</div>
-          <div class="available-text">Available</div>
-        </div>
-      </div>
-      <div class="gas-card">
-        <div class="gas-left">
-          <div class="gas-image">Image</div>
-          <div class="qty-box">
-            <button>-</button>
-            <input type="number" value="1" min="1">
-            <button>+</button>
-          </div>
-          <button class="reserve-btn">Reserve</button>
-        </div>
-        <div class="gas-right">
-        <div>Gas Name: gas name</div>
-          <div>Quantity Qty</div>
-          <div>Size: size</div>
-          <div>Price: price</div>
-          <div class="available-text">Available</div>
-        </div>
-      </div>
-      <div class="gas-card">
-        <div class="gas-left">
-          <div class="gas-image">Image</div>
-          <div class="qty-box">
-            <button>-</button>
-            <input type="number" value="1" min="1">
-            <button>+</button>
-          </div>
-          <button class="reserve-btn">Reserve</button>
-        </div>
-        <div class="gas-right">
-        <div>Gas Name: gas name</div>
-          <div>Quantity Qty</div>
-          <div>Size: size</div>
-          <div>Price: price</div>
-          <div class="available-text">Available</div>
-        </div>
-      </div>
-      <div class="gas-card">
-        <div class="gas-left">
-          <div class="gas-image">Image</div>
-          <div class="qty-box">
-            <button>-</button>
-            <input type="number" value="1" min="1">
-            <button>+</button>
-          </div>
-          <button class="reserve-btn">Reserve</button>
-        </div>
-        <div class="gas-right">
-          <div>Gas Name: gas name</div>
-          <div>Quantity Qty</div>
-          <div>Size: size</div>
-          <div>Price: price</div>
-          <div class="available-text">Available</div>
-        </div>
-      </div>
-      <div class="gas-card">
-        <div class="gas-left">
-          <div class="gas-image">Image</div>
-          <div class="qty-box">
-            <button>-</button>
-            <input type="number" value="1" min="1">
-            <button>+</button>
-          </div>
-          <button class="reserve-btn">Reserve</button>
-        </div>
-        <div class="gas-right">
-          <div>Gas Name: gas name</div>
-          <div>Quantity Qty</div>
-          <div>Size: size</div>
-          <div>Price: price</div>
-          <div class="available-text">Available</div>
-        </div>
-      </div>
-      <div class="gas-card">
-        <div class="gas-left">
-          <div class="gas-image">Image</div>
-          <div class="qty-box">
-            <button>-</button>
-            <input type="number" value="1" min="1">
-            <button>+</button>
-          </div>
-          <button class="reserve-btn">Reserve</button>
-        </div>
-        <div class="gas-right">
-          <div>Gas Name: gas name</div>
-          <div>Quantity Qty</div>
-          <div>Size: size</div>
-          <div>Price: price</div>
-          <div class="available-text">Available</div>
-        </div>
-      </div>
-      <div class="gas-card">
-        <div class="gas-left">
-          <div class="gas-image">Image</div>
-          <div class="qty-box">
-            <button>-</button>
-            <input type="number" value="1" min="1">
-            <button>+</button>
-          </div>
-          <button class="reserve-btn">Reserve</button>
-        </div>
-        <div class="gas-right">
-          <div>Gas Name: gas name</div>
-          <div>Quantity Qty</div>
-          <div>Size: size</div>
-          <div>Price: price</div>
-          <div class="available-text">Available</div>
-        </div>
-      </div>
-
+    <!-- available box removed -->
+    <div id="gas-grid" class="gas-grid">
+      <!-- cards will be populated from /profile-data -->
     </div>
   </div>
 </div>
@@ -362,6 +202,61 @@ document.addEventListener("click", function (e) {
       input.value = current - 1;
     }
   }
+});
+</script>
+
+<script>
+// populate seller info and gas grid from /profile-data
+document.addEventListener('DOMContentLoaded', function () {
+  const usernameEl = document.getElementById('seller-username');
+  const locationEl = document.getElementById('seller-location');
+  const phoneEl = document.getElementById('seller-phone');
+  const grid = document.getElementById('gas-grid');
+
+  // if URL contains ?user=<username> request that user's data, otherwise use default /profile-data
+  const params = new URLSearchParams(window.location.search);
+  const viewUser = params.get('user');
+  const endpoint = viewUser ? `/profile-data?user=${encodeURIComponent(viewUser)}` : '/profile-data';
+  fetch(endpoint).then(r => r.json()).then(data => {
+    if (!data) return;
+    if (data.name && usernameEl) usernameEl.textContent = data.name;
+    // location/phone not stored; leave placeholders or use first bottle.phone
+      if (data.bottles && data.bottles.length) {
+      if (phoneEl && !phoneEl.textContent.trim()) phoneEl.textContent = data.bottles[0].phone || '';
+      // create card for each bottle up to 9
+      const bottles = data.bottles.slice(0, 9);
+        // available box removed; no additional UI here
+      grid.innerHTML = bottles.map(b => {
+        const brand = (b.brand||'').replace(/</g,'&lt;');
+        const qty = b.quantity != null ? b.quantity : 0;
+        const price = b.price != null ? b.price : 0;
+        const available = qty > 0 ? 'Available' : 'Out of stock';
+        return `
+          <div class="gas-card">
+            <div class="gas-left">
+              <div class="gas-image">${brand}</div>
+              <div class="qty-box">
+                <button class="qty-minus">-</button>
+                <input type="number" value="1" min="1">
+                <button class="qty-plus">+</button>
+              </div>
+              <button class="reserve-btn">Reserve</button>
+            </div>
+            <div class="gas-right">
+              <div>Gas Name: ${brand}</div>
+              <div>Quantity: ${qty}</div>
+              <div>Price: ${price} CFA</div>
+              <div class="available-text">${available}</div>
+            </div>
+          </div>`;
+      }).join('\n');
+    } else {
+      // no bottles: clear grid
+      grid.innerHTML = '';
+    }
+  }).catch(err => {
+    console.error('profile-data error', err);
+  });
 });
 </script>
 
