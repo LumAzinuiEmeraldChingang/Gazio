@@ -13,14 +13,19 @@ body {
     background-color: lightskyblue;
     margin: 0;
     padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* MAIN CONTAINER */
 .container {
-    max-width: 450px;
+    max-width: 650px;
+    width: 100%;
     background: white;
     padding: 25px;
-    margin: 40px auto;
+    margin: 0 auto;
     border-radius: 10px;
     box-shadow: 0 0 15px rgba(0,0,0,0.1);
 }
@@ -77,12 +82,12 @@ input, select {
 /* BUTTONS */
 .buttons {
     display: flex;
-    justify-content: space-between;
+    gap: 10px;
     margin-top: 25px;
 }
 
 button {
-    width: 48%;
+    flex: 1;
     padding: 10px;
     border: none;
     border-radius: 5px;
@@ -106,17 +111,9 @@ button.cancel {
 
 <div class="container">
 
-    <!-- PROFILE SECTION (TOP) -->
-    <div class="profile-section">
-        <img id="profilePreview" src="profile-default.png" alt="Profile Picture">
-        <label>Change Profile Picture</label>
-        <input type="file" accept="image/*" id="profileInput">
-    </div>
+    <!-- PROFILE SECTION (removed) -->
 
     <h2>Edit Gas Information</h2>
-
-    <label>Name</label>
-    <input type="text" id="name" value="John Doe">
 
     <label>Gas Brand</label>
     <select id="brand">
@@ -134,44 +131,236 @@ button.cancel {
     <label>Price (FCFA)</label>
     <input type="number" id="price" value="6500">
 
+    <!-- phone removed -->
     <div class="buttons">
         <button class="update" id="updateBtn">Update</button>
+        <button class="update" id="addBtn" style="background-color:green;">Add</button>
         <button class="cancel" id="cancelBtn">Cancel</button>
     </div>
 
 </div>
 
-<script>// PROFILE IMAGE
-const profileInput = document.getElementById("profileInput");
-const profilePreview = document.getElementById("profilePreview");
-
-// GAS IMAGE
+<script>// PROFILE IMAGE (removed)
+// GAS IMAGE (optional elements)
 const gasInput = document.getElementById("gasInput");
 const gasPreview = document.getElementById("gasPreview");
 
+// PHONE removed
+const brandSelect = document.getElementById('brand');
+let existingBrands = new Set();
+let fetchedBottles = {}; // map lowercase brand -> bottle data
+let brandNote;
+
 // BUTTONS
 const updateBtn = document.getElementById("updateBtn");
+const addBtn = document.getElementById("addBtn");
 const cancelBtn = document.getElementById("cancelBtn");
 
-// Profile image preview
-profileInput.addEventListener("change", function () {
-    const file = this.files[0];
-    if (file) {
-        profilePreview.src = URL.createObjectURL(file);
-    }
-});
+// Profile image preview removed
 
 // Gas image preview
-gasInput.addEventListener("change", function () {
-    const file = this.files[0];
-    if (file) {
-        gasPreview.src = URL.createObjectURL(file);
-    }
-});
+if (gasInput && gasPreview) {
+    gasInput.addEventListener("change", function () {
+        const file = this.files[0];
+        if (file) {
+            gasPreview.src = URL.createObjectURL(file);
+        }
+    });
+}
+
+// normalizeCameroonNumber removed
 
 // Update button
 updateBtn.addEventListener("click", function () {
-    alert("Profile and gas details updated successfully!");
+    // Update an existing bottle: require that the brand already exists for this user
+    const brand = (document.getElementById('brand').value || '').trim();
+    if (!brand) { alert('Please select a brand to update.'); return; }
+    if (!existingBrands.has(brand.toLowerCase())) {
+        alert("Gaz doesn't exist");
+        return;
+    }
+
+    const payload = {
+        brand,
+        quantity: parseInt(document.getElementById('quantity').value, 10) || null,
+        price: parseInt(document.getElementById('price').value, 10) || null
+    };
+
+    fetch('/update-bottle', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    }).then(async r => {
+        const body = await r.json().catch(()=>({}));
+        if (!r.ok) {
+            const msg = body && body.error ? body.error : 'Update failed';
+            alert(msg);
+            return;
+        }
+        alert('Updated successfully');
+        window.location.href = 'profile.html';
+    }).catch(err => {
+        console.error(err);
+        alert('Failed to update. See console for details.');
+    });
+});
+
+// Add button: create a new bottle for the signed-in user
+if (addBtn) {
+    addBtn.addEventListener('click', function() {
+        const payload = {
+            brand: (document.getElementById('brand').value || '').trim(),
+            quantity: parseInt(document.getElementById('quantity').value, 10) || null,
+            price: parseInt(document.getElementById('price').value, 10) || null
+        };
+
+        if (!payload.brand) { alert('Please select or enter a brand.'); return; }
+        // If brand already exists, do not call server and show popup
+        if (existingBrands.has(payload.brand.toLowerCase())) {
+            alert('Gaz already exist');
+            return;
+        }
+
+        fetch('/add-bottle', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        }).then(async r => {
+            const txt = await r.json().catch(()=>({}));
+            if (!r.ok) {
+                const msg = txt && txt.error ? txt.error : 'Failed to add bottle';
+                alert(msg);
+                return;
+            }
+            // Show success and add a live preview on the edit page
+            alert('Gaz bottle successfully added');
+            renderAddedBottle(payload);
+            // mark brand as existing and store fetched data
+            if (payload.brand) {
+                existingBrands.add(payload.brand.toLowerCase());
+                fetchedBottles[payload.brand.toLowerCase()] = payload;
+                // after adding, enable Update for that brand
+                updateBtn.disabled = false;
+            }
+        }).catch(err => {
+            console.error(err);
+            alert('Failed to add bottle. See console for details.');
+        });
+    });
+}
+
+function renderAddedBottle(bottle) {
+    const containerId = 'added-bottles';
+    let container = document.getElementById(containerId);
+    if (!container) {
+        container = document.createElement('div');
+        container.id = containerId;
+        container.style.marginTop = '16px';
+        container.style.padding = '10px';
+        container.style.border = '1px solid #cfc';
+        container.style.background = '#f6fff6';
+        container.style.borderRadius = '6px';
+        const heading = document.createElement('div');
+        heading.textContent = 'Recently added bottle:';
+        heading.style.fontWeight = 'bold';
+        heading.style.marginBottom = '8px';
+        container.appendChild(heading);
+        document.querySelector('.container').appendChild(container);
+    }
+
+    const card = document.createElement('div');
+    card.style.display = 'flex';
+    card.style.justifyContent = 'space-between';
+    card.style.alignItems = 'center';
+    card.style.padding = '8px';
+    card.style.borderTop = '1px solid #dfe';
+
+    const info = document.createElement('div');
+    info.innerHTML = `<strong>${escapeHtml(bottle.brand)}</strong> — ${bottle.quantity || 0} kg — ${bottle.price || 0} CFA`;
+
+    const goto = document.createElement('button');
+    goto.textContent = 'View profile';
+    goto.style.background = '#5bbcd6';
+    goto.style.color = 'white';
+    goto.style.border = 'none';
+    goto.style.padding = '6px 10px';
+    goto.style.borderRadius = '4px';
+    goto.style.cursor = 'pointer';
+    goto.addEventListener('click', () => { window.location.href = 'profile.html'; });
+
+    card.appendChild(info);
+    card.appendChild(goto);
+    container.appendChild(card);
+}
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>"'`]/g, function (c) {
+        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;',"`":'&#96;'}[c];
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    if (!brandSelect) return;
+    // fetch existing bottles and keep them in memory (don't disable options)
+    fetch('/profile-data').then(r => r.json()).then(data => {
+        if (!data || !data.bottles) return;
+        data.bottles.forEach(b => {
+            if (b.brand) {
+                existingBrands.add(b.brand.toLowerCase());
+                fetchedBottles[b.brand.toLowerCase()] = b;
+            }
+        });
+        // set initial button states based on current selection
+        const cur = (brandSelect.value || '').toLowerCase();
+        if (cur && existingBrands.has(cur)) {
+            addBtn.disabled = false; // Add allowed but will warn if duplicate
+            // allow update
+            updateBtn.disabled = false;
+            // fill fields for the selected existing bottle
+            const b = fetchedBottles[cur];
+            if (b) {
+                document.getElementById('quantity').value = b.quantity || 0;
+                document.getElementById('price').value = b.price || 0;
+            }
+        } else {
+            // new brand selected
+            addBtn.disabled = false;
+            updateBtn.disabled = true;
+        }
+    }).catch(() => {});
+
+    // add a small note under brand select
+    brandNote = document.createElement('small');
+    brandNote.style.color = 'red';
+    brandNote.style.display = 'none';
+    brandSelect.parentNode.insertBefore(brandNote, brandSelect.nextSibling);
+
+    brandSelect.addEventListener('change', () => {
+        const val = (brandSelect.value || '').toLowerCase();
+        if (!val) { addBtn.disabled = false; updateBtn.disabled = true; brandNote.style.display = 'none'; return; }
+        if (existingBrands.has(val)) {
+            // existing brand: enable Update, disable Add from modifying DB (Add will warn)
+            updateBtn.disabled = false;
+            addBtn.disabled = false; // keep Add enabled but will show warning
+            brandNote.textContent = 'This brand already exists in your bottles.';
+            brandNote.style.display = 'block';
+            // populate fields with existing values
+            const b = fetchedBottles[val];
+            if (b) {
+                document.getElementById('quantity').value = b.quantity || 0;
+                document.getElementById('price').value = b.price || 0;
+            }
+        } else {
+            // new brand: enable Add, disable Update
+            addBtn.disabled = false;
+            updateBtn.disabled = true;
+            brandNote.style.display = 'none';
+            // reset fields to defaults
+            document.getElementById('quantity').value = 12;
+            document.getElementById('price').value = 6500;
+        }
+    });
 });
 
 // Cancel button

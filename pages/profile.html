@@ -205,7 +205,7 @@ body {
 <!-- ===== PROFILE ===== -->
 <div class="profile">
     <div class="avatar"></div>
-    <div class="username">{{username}}</div>
+    <div id="username" class="username">{{username}}</div>
     <a href="edit.html" class="edit-btn">Edit</a>
 </div>
 
@@ -243,73 +243,8 @@ body {
 </div>
 
 <!-- ===== POSTS ===== -->
-<div id="posts">
-    <div class="gas-card">
-        <div class="gas-bottle gaz">
-            <img src="/static/images/gas-placeholder.png" alt="Gas">
-            <div class="gas-name">{{gas_brand}}</div>
-        </div>
-        <div class="details">
-            <div class="info-box">Available: {{available}}</div>
-            <div class="info-box price-box">Price: {{price}} CFA</div>
-            <div class="info-box">Quarter: {{quarter}}</div>
-            <div class="info-box {{stock_class}}">{{stock_status}}</div>
-        </div>
-    </div>
-    <div id="posts">
-    <div class="gas-card">
-        <div class="gas-bottle gaz">
-            <img src="/static/images/gas-placeholder.png" alt="Gas">
-            <div class="gas-name">{{gas_brand}}</div>
-        </div>
-        <div class="details">
-            <div class="info-box">Available: {{available}}</div>
-            <div class="info-box price-box">Price: {{price}} CFA</div>
-            <div class="info-box">Quarter: {{quarter}}</div>
-            <div class="info-box {{stock_class}}">{{stock_status}}</div>
-        </div>
-    </div>
-    <div id="posts">
-    <div class="gas-card">
-        <div class="gas-bottle gaz">
-            <img src="/static/images/gas-placeholder.png" alt="Gas">
-            <div class="gas-name">{{gas_brand}}</div>
-        </div>
-        <div class="details">
-            <div class="info-box">Available: {{available}}</div>
-            <div class="info-box price-box">Price: {{price}} CFA</div>
-            <div class="info-box">Quarter: {{quarter}}</div>
-            <div class="info-box {{stock_class}}">{{stock_status}}</div>
-        </div>
-    </div>
-    <div id="posts">
-    <div class="gas-card">
-        <div class="gas-bottle gaz">
-            <img src="/static/images/gas-placeholder.png" alt="Gas">
-            <div class="gas-name">{{gas_brand}}</div>
-        </div>
-        <div class="details">
-            <div class="info-box">Available: {{available}}</div>
-            <div class="info-box price-box">Price: {{price}} CFA</div>
-            <div class="info-box">Quarter: {{quarter}}</div>
-            <div class="info-box {{stock_class}}">{{stock_status}}</div>
-        </div>
-    </div>
-    <div id="posts">
-    <div class="gas-card">
-        <div class="gas-bottle gaz">
-            <img src="/static/images/gas-placeholder.png" alt="Gas">
-            <div class="gas-name">{{gas_brand}}</div>
-        </div>
-        <div class="details">
-            <div class="info-box">Available: {{available}}</div>
-            <div class="info-box price-box">Price: {{price}} CFA</div>
-            <div class="info-box">Quarter: {{quarter}}</div>
-            <div class="info-box {{stock_class}}">{{stock_status}}</div>
-        </div>
-    </div>
-    <!-- Repeat gas-card as needed -->
-</div>
+<!-- ===== POSTS ===== -->
+<div id="posts"><!-- populated dynamically if profile-data contains gas info --></div>
 
 <!-- ===== BOTTOM FIXED DASHBOARD ===== -->
 <div class="bottom-dashboard">
@@ -409,5 +344,88 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+<script>
+// populate username from cookie (set at signup/login)
+(function(){
+    // Prefer server-provided /me (works if cookie is HTTP-only); fallback to document.cookie
+    function setName(uname){
+        if (!uname) return;
+        const el = document.querySelector('.username');
+        if (el) el.textContent = uname;
+        try{ document.title = 'Gas Profile - ' + uname; }catch(e){}
+    }
+
+    fetch('/profile-data').then(r => r.json()).then(data => {
+        if (!data) return;
+        if (data.name) setName(data.name);
+
+        const posts = document.getElementById('posts');
+        const bottles = Array.isArray(data.bottles) ? data.bottles : [];
+        if (!bottles.length) {
+            posts.innerHTML = '';
+            return;
+        }
+
+        const cards = bottles.map(b => {
+            const brand = (b.brand || '').replace(/</g,'&lt;');
+            const qty = b.quantity != null ? b.quantity : 0;
+            const price = b.price != null ? b.price : 0;
+            const stock_status = qty > 0 ? 'In stock' : 'Out of stock';
+            return `
+            <div class="gas-card">
+                <div class="gas-bottle gaz">
+                    <img src="images/gas-placeholder.png" alt="Gas">
+                    <div class="gas-name">${brand}</div>
+                </div>
+                <div class="details">
+                    <div class="info-box">Available: <span class="available">${qty}</span></div>
+                    <div class="info-box price-box">Price: <span class="price">${price}</span> CFA</div>
+                    <div class="info-box">Quarter: <span class="quarter"></span></div>
+                    <div class="info-box stock-status-box"><span class="stock_status">${stock_status}</span></div>
+                    <div style="margin-top:8px">
+                        <button class="delete-btn" data-brand="${(b.brand||'').replace(/"/g,'&quot;')}" style="background:#e74c3c;color:white;border:none;padding:6px 10px;border-radius:6px;cursor:pointer;">Delete</button>
+                    </div>
+                </div>
+            </div>`;
+        }).join('\n');
+
+        posts.innerHTML = cards;
+
+        // Attach delete handler via event delegation
+        posts.addEventListener('click', async function (ev) {
+            const btn = ev.target.closest('.delete-btn');
+            if (!btn) return;
+            const brand = btn.getAttribute('data-brand') || '';
+            if (!brand) { alert('Missing brand'); return; }
+            if (!confirm(`Delete ${brand}?`)) return;
+            btn.disabled = true;
+            try {
+                const res = await fetch('/delete-bottle', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ brand })
+                });
+                const body = await res.json().catch(()=>({}));
+                if (!res.ok) {
+                    alert(body.error || 'Failed to delete');
+                    btn.disabled = false;
+                    return;
+                }
+                // remove card from DOM
+                const card = btn.closest('.gas-card');
+                if (card) card.remove();
+            } catch (err) {
+                console.error(err);
+                alert('Error deleting. See console.');
+                btn.disabled = false;
+            }
+        });
+    }).catch(() => {
+        // fallback to /me
+        fetch('/me').then(r=>r.json()).then(d=>{ if (d && d.username) setName(d.username); });
+    });
+})();
+</script>
+
 </body>
-</html
+</html>
