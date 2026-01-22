@@ -221,24 +221,11 @@ body {
 <div id="transactions" style="display:none;">
     <div class="gas-card">
         <div class="details" style="width:100%;">
+            <div class="info-box price-box">Pending Reservations</div>
+            <div id="pending-list"></div>
             <div class="info-box price-box">Transaction History</div>
 
-            <c:if test="${not empty transactions}">
-                <c:forEach var="tx" items="${transactions}">
-                    <div class="info-box" id="tx-${tx.id}">
-                        Date: ${tx.date} | Gas: ${tx.gasBrand} | Amount: ${tx.amount} CFA
-                        <br>
-                        Status: 
-                        <span class="status-text ${tx.status == 'Cancelled' ? 'out' : (tx.status == 'Successful' ? 'stock' : '')}">
-                            ${tx.status}
-                        </span>
-                    </div>
-                </c:forEach>
-            </c:if>
-
-            <c:if test="${empty transactions}">
-                <div class="info-box out">No transactions found</div>
-            </c:if>
+            <!-- Server-rendered transaction boxes removed: transaction history is managed client-side and via moved entries -->
 
         </div>
     </div>
@@ -284,21 +271,57 @@ function showTransactions() {
 
 // ===== PENDING TRANSACTION TIMER & BUTTONS =====
 document.addEventListener('DOMContentLoaded', function() {
+    // Render pending reservations from localStorage into the Pending area
+    try {
+        const raw = localStorage.getItem('reservations');
+        const list = raw ? JSON.parse(raw) : [];
+        const pendingList = document.getElementById('pending-list');
+        if (pendingList && Array.isArray(list) && list.length) {
+            list.forEach(r => {
+                // skip expired
+                if (!r || !r.expiresAt || r.expiresAt <= Date.now()) return;
+                const div = document.createElement('div');
+                div.className = 'info-box';
+                div.id = r.id;
+                div.setAttribute('data-expires', String(r.expiresAt));
+                div.setAttribute('data-reservation-id', r.id);
+                div.setAttribute('data-price', String(r.price || 0));
+                div.setAttribute('data-qty', String(r.qty || 1));
+                const date = new Date(r.reservedAt || Date.now()).toLocaleString();
+                const safeBrand = (r.brand||'').replace(/</g,'&lt;');
+                const priceText = r.price != null ? r.price : '';
+                const qtyText = r.qty != null ? r.qty : '';
+                div.innerHTML = `Date: ${date} | Gas: ${safeBrand} | Price: ${priceText} CFA | Qty: ${qtyText}<br>Status: <span class="status-text">Pending</span>`;
+                // prepend so recent reservations appear first
+                pendingList.insertBefore(div, pendingList.firstChild);
+            });
+        }
+    } catch (e) { console.error('reservations read error', e); }
+
+    // Setup timers for any Pending status-text using data-expires when present
     document.querySelectorAll('.status-text').forEach(statusSpan => {
         if (statusSpan.textContent.trim() === 'Pending') {
             const txDiv = statusSpan.closest('.info-box');
+            if (!txDiv) return;
 
             // Create timer element
             const timer = document.createElement('span');
             timer.className = 'tx-timer';
             txDiv.appendChild(timer);
 
-            // 5-hour countdown in milliseconds
-            let remaining = 5 * 60 * 60 * 1000; 
+            // compute remaining time from data-expires attribute if present, else default 5 hours
+            const expiresAttr = txDiv.getAttribute('data-expires');
+            let remaining = 5 * 60 * 60 * 1000;
+            if (expiresAttr) {
+                const expires = parseInt(expiresAttr, 10);
+                remaining = Math.max(0, expires - Date.now());
+            }
+
             const interval = setInterval(() => {
                 if (remaining <= 0) {
                     clearInterval(interval);
                     timer.textContent = 'Time expired';
+                    // auto-mark expired? keep as Pending but show expired text
                     return;
                 }
                 let hours = Math.floor(remaining / (1000 * 60 * 60));
@@ -324,30 +347,60 @@ document.addEventListener('DOMContentLoaded', function() {
             cancelBtn.style.marginLeft = '6px';
             cancelBtn.style.backgroundColor = '#d9534f';
 
-            // Collected click logic
+            // helper to remove reservation from localStorage by id
+            function removeReservationById(id) {
+                try {
+                    const raw = localStorage.getItem('reservations');
+                    const list = raw ? JSON.parse(raw) : [];
+                    const filtered = list.filter(x => x && x.id !== id);
+                    localStorage.setItem('reservations', JSON.stringify(filtered));
+                } catch (e) { console.error('remove reservation error', e); }
+            }
+
+            // Collected click logic: mark successful and move into history
             collectBtn.addEventListener('click', function () {
-                statusSpan.textContent = 'Successful';
-                statusSpan.className = 'status-text stock';
-                collectBtn.remove();
-                cancelBtn.remove();
-                timer.remove();
                 clearInterval(interval);
-                txDiv.style.transition = 'opacity 0.6s';
-                txDiv.style.opacity = '0';
-                setTimeout(() => txDiv.style.display = 'none', 600);
+                // remove reservation if present
+                const rid = txDiv.getAttribute('data-reservation-id');
+                if (rid) removeReservationById(rid);
+
+                // use data attributes (price and qty) when available
+                const brand = txDiv.textContent.match(/Gas:\s*([^|\n]+)/i) ? (txDiv.textContent.match(/Gas:\s*([^|\n]+)/i)[1].trim()) : '';
+                const price = txDiv.getAttribute('data-price') || '';
+                const qty = txDiv.getAttribute('data-qty') || '';
+                const collectedDate = new Date().toLocaleString();
+                // replace content to reflect a completed transaction
+                txDiv.innerHTML = `Date: ${collectedDate} | Gas: ${brand} | Price: ${price} CFA | Qty: ${qty}<br>Status: <span class="status-text stock">Successful</span>`;
+
+                // remove reservation metadata
+                txDiv.removeAttribute('data-expires');
+                txDiv.removeAttribute('data-reservation-id');
+
+                // mark with timestamp and move into the end of the Transaction History (append to details)
+                txDiv.setAttribute('data-timestamp', String(Date.now()));
+                const detailsEl = document.querySelector('#transactions .details');
+                if (detailsEl) {
+                    detailsEl.appendChild(txDiv);
+                }
             });
 
-            // Cancel click logic
+            // Cancel click logic: mark cancelled and move to history with price and qty
             cancelBtn.addEventListener('click', function () {
-                statusSpan.textContent = 'Cancelled';
-                statusSpan.className = 'status-text out';
-                collectBtn.remove();
-                cancelBtn.remove();
-                timer.remove();
                 clearInterval(interval);
-                txDiv.style.transition = 'opacity 0.6s';
-                txDiv.style.opacity = '0';
-                setTimeout(() => txDiv.style.display = 'none', 600);
+                const rid = txDiv.getAttribute('data-reservation-id');
+                if (rid) removeReservationById(rid);
+                const brand = txDiv.textContent.match(/Gas:\s*([^|\n]+)/i) ? (txDiv.textContent.match(/Gas:\s*([^|\n]+)/i)[1].trim()) : '';
+                const price = txDiv.getAttribute('data-price') || '';
+                const qty = txDiv.getAttribute('data-qty') || '';
+                const cancelledDate = new Date().toLocaleString();
+                txDiv.innerHTML = `Date: ${cancelledDate} | Gas: ${brand} | Price: ${price} CFA | Qty: ${qty}<br>Status: <span class="status-text out">Cancelled</span>`;
+                txDiv.removeAttribute('data-expires');
+                txDiv.removeAttribute('data-reservation-id');
+                txDiv.setAttribute('data-timestamp', String(Date.now()));
+                const detailsEl = document.querySelector('#transactions .details');
+                if (detailsEl) {
+                    detailsEl.appendChild(txDiv);
+                }
             });
 
             // Append buttons to transaction
@@ -355,6 +408,7 @@ document.addEventListener('DOMContentLoaded', function() {
             txDiv.appendChild(cancelBtn);
         }
     });
+    // Transaction history pruning removed to keep history visible permanently
 });
 </script>
 
@@ -405,7 +459,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="details">
                     <div class="info-box">Available: <span class="available">${qty}</span></div>
                     <div class="info-box price-box">Price: <span class="price">${price}</span> CFA</div>
-                    <div class="info-box">Quarter: <span class="quarter"></span></div>
+                    <!-- Quarter box removed -->
                     <div class="info-box stock-status-box"><span class="stock_status">${stock_status}</span></div>
                     <div style="margin-top:8px">
                         <button class="delete-btn" data-brand="${(b.brand||'').replace(/"/g,'&quot;')}" style="background:#e74c3c;color:white;border:none;padding:6px 10px;border-radius:6px;cursor:pointer;">Delete</button>
