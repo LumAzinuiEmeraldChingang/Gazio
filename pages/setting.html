@@ -35,6 +35,19 @@
 
   h2 { text-align: center; margin-bottom: 20px; }
 
+  /* Profile picture upload */
+  .profile-pic-area { text-align: center; margin-bottom: 16px; }
+  .profile-pic-label { position: relative; display: inline-block; cursor: pointer; }
+  .profile-pic-label img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid #eee; background: #fafafa; display: block; }
+  .camera-overlay { position: absolute; right: -4px; bottom: -4px; background: rgba(0,0,0,0.6); color: #fff; border-radius: 50%; padding: 8px; font-size: 16px; }
+  /* Phone card (Cameroon) */
+  .phone-card { background: #fbfbfb; border: 1px solid #e6e6e6; padding: 10px; border-radius: 8px; margin: 8px 0 14px; }
+  .phone-card label { display: block; margin-bottom: 6px; font-weight: 600; }
+  .phone-input-row { display: flex; gap: 8px; align-items: center; }
+  .phone-input-row .country { background: #fff; border: 1px solid #ddd; padding: 8px 10px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
+  #phoneNumber { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 16px; }
+  .phone-error { color: #b00020; font-size: 13px; margin-top: 6px; display: none; }
+
   input {
     width: 100%;
     padding: 10px;
@@ -91,11 +104,30 @@
 <div class="settings-container">
   <h2>Account Settings</h2>
   
+  <!-- Profile picture upload area -->
+  <div class="profile-pic-area">
+    <label for="profileInput" class="profile-pic-label" title="Upload profile picture">
+      <img id="profilePreview" src="" alt="Profile picture" />
+      <div class="camera-overlay">📷</div>
+    </label>
+    <input type="file" id="profileInput" accept="image/*">
+  </div>
+  
   <label>Username</label>
   <input type="text" id="username" placeholder="New username">
   
   <label>Email</label>
   <input type="email" id="email" placeholder="New email">
+  
+  <!-- Cameroon phone card -->
+  <div class="phone-card">
+    <label for="phoneNumber">Phone (Cameroon, +237)</label>
+    <div class="phone-input-row">
+      <div class="country">🇨🇲 +237</div>
+      <input type="tel" id="phoneNumber" placeholder="6XXXXXXXX" maxlength="9" inputmode="numeric">
+    </div>
+    <div id="phoneError" class="phone-error">Please enter a valid Cameroon number (8 or 9 digits).</div>
+  </div>
   
   <label>Password</label>
   <input type="password" id="password" placeholder="New password" oninput="checkPasswordStrength()">
@@ -157,15 +189,63 @@ async function updateSettings() {
     const username = document.getElementById('username').value;
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
+  // include profile image if selected (data URL)
+  const profileImg = document.getElementById('profilePreview').src || null;
+
+    // phone (Cameroon). Input only holds national number (digits after +237)
+    const phoneField = document.getElementById('phoneNumber');
+    const rawPhone = (phoneField && phoneField.value) ? phoneField.value.replace(/\D/g, '') : '';
+    const phoneErrorEl = document.getElementById('phoneError');
+    if (rawPhone && !validateCameroonNumber(rawPhone)) {
+      phoneErrorEl.style.display = 'block';
+      phoneErrorEl.innerText = 'Please enter 8 or 9 digits for a Cameroon number.';
+      return;
+    } else if (phoneErrorEl) {
+      phoneErrorEl.style.display = rawPhone ? 'none' : 'none';
+    }
 
     const response = await fetch('/api/settings', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, email, password })
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, email, password, profileImage: profileImg, phone: rawPhone ? '+237' + rawPhone : null })
     });
 
     const result = await response.json();
     document.getElementById('status').innerText = result.message;
+}
+
+// Profile image preview handling
+document.getElementById('profileInput').addEventListener('change', function(e) {
+  const file = this.files && this.files[0];
+  if (!file) return;
+  if (!file.type.startsWith('image/')) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    const img = document.getElementById('profilePreview');
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+});
+
+// Phone input: allow digits only, validate Cameroon number length
+const phoneInput = document.getElementById('phoneNumber');
+if (phoneInput) {
+  phoneInput.addEventListener('input', function() {
+    // remove non-digits
+    const cleaned = this.value.replace(/\D/g, '');
+    this.value = cleaned;
+    const err = document.getElementById('phoneError');
+    if (cleaned && !validateCameroonNumber(cleaned)) {
+      err.style.display = 'block';
+    } else {
+      err.style.display = 'none';
+    }
+  });
+}
+
+function validateCameroonNumber(digits) {
+  // Accept 8 or 9 digit national numbers (after +237)
+  return /^\d{8,9}$/.test(digits);
 }
 
 async function logout() {
