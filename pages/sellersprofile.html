@@ -324,13 +324,14 @@ document.addEventListener('DOMContentLoaded', function () {
         // available box removed; no additional UI here
       grid.innerHTML = bottles.map(b => {
         const brand = (b.brand||'').replace(/</g,'&lt;');
+        const rawBrand = (b.brand||'').replace(/"/g,'&quot;');
         const qty = b.quantity != null ? b.quantity : 0;
         const price = b.price != null ? b.price : 0;
         const available = qty > 0 ? 'Available' : 'Out of stock';
         return `
           <div class="gas-card" data-available="${qty}">
             <div class="gas-left">
-              <div class="gas-image">${brand}</div>
+              <div class="gas-image"><img data-brand="${rawBrand}" src="images/gas-placeholder.png" alt="${brand}" style="width:100%;height:100%;object-fit:cover;border-radius:4px"></div>
               <div class="qty-box">
                 <button class="qty-minus">-</button>
                 <input type="number" value="1" min="1" max="${qty}">
@@ -346,6 +347,40 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>
           </div>`;
       }).join('\n');
+
+      // load brand-specific images for the grid
+      (function loadSellerImages(){
+        const placeholdersrc = 'images/gas-placeholder.png';
+        const exts = ['.jpeg', '.jpg', '.png'];
+        function variants(name){
+          if(!name) return [];
+          const v = [];
+          const cleaned = name.trim();
+          const words = cleaned.split(/\s+/);
+          v.push(cleaned);
+          v.push(words.join(''));
+          v.push(cleaned.toLowerCase());
+          v.push(words.join('').toLowerCase());
+          v.push(words.map(w=>w.charAt(0).toUpperCase()+w.slice(1).toLowerCase()).join(''));
+          return Array.from(new Set(v)).filter(Boolean);
+        }
+
+        document.querySelectorAll('.gas-image img[data-brand]').forEach(img => {
+          const brand = img.getAttribute('data-brand') || '';
+          const tries = [];
+          variants(brand).forEach(base => exts.forEach(ext => tries.push('images/' + base + ext)));
+          let i = 0;
+          function tryNext(){
+            if(i >= tries.length){ img.src = placeholdersrc; return; }
+            const candidate = tries[i++];
+            const tester = new Image();
+            tester.onload = function(){ img.src = candidate; };
+            tester.onerror = tryNext;
+            tester.src = candidate;
+          }
+          tryNext();
+        });
+      })();
     } else {
       // no bottles: clear grid
       grid.innerHTML = '';
