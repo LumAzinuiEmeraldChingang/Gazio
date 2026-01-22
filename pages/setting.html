@@ -128,6 +128,10 @@
     </div>
     <div id="phoneError" class="phone-error">Please enter a valid Cameroon number (8 or 9 digits).</div>
   </div>
+
+  <!-- Location -->
+  <label for="location">Location</label>
+  <input type="text" id="location" placeholder="City, Region (e.g., Douala)" maxlength="100">
   
   <label>Password</label>
   <input type="password" id="password" placeholder="New password" oninput="checkPasswordStrength()">
@@ -195,6 +199,7 @@ async function updateSettings() {
     // phone (Cameroon). Input only holds national number (digits after +237)
     const phoneField = document.getElementById('phoneNumber');
     const rawPhone = (phoneField && phoneField.value) ? phoneField.value.replace(/\D/g, '') : '';
+    const location = (document.getElementById('location') && document.getElementById('location').value) ? document.getElementById('location').value.trim() : null;
     const phoneErrorEl = document.getElementById('phoneError');
     if (rawPhone && !validateCameroonNumber(rawPhone)) {
       phoneErrorEl.style.display = 'block';
@@ -207,7 +212,7 @@ async function updateSettings() {
     const response = await fetch('/api/settings', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, email, password, profileImage: profileImg, phone: rawPhone ? '+237' + rawPhone : null })
+      body: JSON.stringify({ username, email, password, profileImage: profileImg, phone: rawPhone ? '+237' + rawPhone : null, location: location })
     });
 
     const result = await response.json();
@@ -226,27 +231,6 @@ document.getElementById('profileInput').addEventListener('change', function(e) {
   };
   reader.readAsDataURL(file);
 });
-
-// Phone input: allow digits only, validate Cameroon number length
-const phoneInput = document.getElementById('phoneNumber');
-if (phoneInput) {
-  phoneInput.addEventListener('input', function() {
-    // remove non-digits
-    const cleaned = this.value.replace(/\D/g, '');
-    this.value = cleaned;
-    const err = document.getElementById('phoneError');
-    if (cleaned && !validateCameroonNumber(cleaned)) {
-      err.style.display = 'block';
-    } else {
-      err.style.display = 'none';
-    }
-  });
-}
-
-function validateCameroonNumber(digits) {
-  // Accept 8 or 9 digit national numbers (after +237)
-  return /^\d{8,9}$/.test(digits);
-}
 
 async function logout() {
     const confirmLogout = confirm("Are you sure you want to log out?");

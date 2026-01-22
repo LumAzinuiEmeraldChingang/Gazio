@@ -44,6 +44,30 @@ const db = new sqlite3.Database('./users.db', (err) => {
         console.log('Users table created or already exists.');
       }
     });
+
+      // Ensure optional columns exist: phone, profileImage
+      db.all("PRAGMA table_info(users)", (err, cols) => {
+        if (err) return console.error('Error checking users table info:', err.message);
+        const names = (cols || []).map(c => c.name);
+        if (!names.includes('phone')) {
+          db.run("ALTER TABLE users ADD COLUMN phone TEXT", (err) => {
+            if (err) console.error('Error adding phone column:', err.message);
+            else console.log('Added phone column to users table');
+          });
+        }
+        if (!names.includes('profileImage')) {
+          db.run("ALTER TABLE users ADD COLUMN profileImage TEXT", (err) => {
+            if (err) console.error('Error adding profileImage column:', err.message);
+            else console.log('Added profileImage column to users table');
+          });
+        }
+        if (!names.includes('location')) {
+          db.run("ALTER TABLE users ADD COLUMN location TEXT", (err) => {
+            if (err) console.error('Error adding location column:', err.message);
+            else console.log('Added location column to users table');
+          });
+        }
+      });
   }
 });
 
@@ -191,6 +215,61 @@ app.get('/profile-data', (req, res) => {
 // Add other routes as needed
 app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, 'pages', 'Login.html'));
+});
+
+// Save or update account settings (username identified by cookie or provided in body)
+app.put('/api/settings', (req, res) => {
+  const body = req.body || {};
+  const cookies = parseCookies(req);
+  const username = cookies.username || (body.username ? String(body.username) : null);
+  if (!username) return res.status(400).json({ message: 'No username provided or authenticated' });
+
+  const email = body.email ? String(body.email) : null;
+  const password = body.password ? String(body.password) : null;
+  const phone = body.phone ? String(body.phone) : null; // expect +237... or null
+  const profileImage = body.profileImage ? String(body.profileImage) : null; // data URL or null
+  const location = body.location ? String(body.location) : null;
+
+  // Check if user exists
+  db.get(`SELECT * FROM users WHERE username = ?`, [username], (err, row) => {
+    if (err) return res.status(500).json({ message: 'DB error' });
+
+    if (row) {
+      // Build update dynamically for provided fields
+      const updates = [];
+      const params = [];
+      if (email !== null) { updates.push('email = ?'); params.push(email); }
+      if (password !== null) { updates.push('password = ?'); params.push(password); }
+      if (phone !== null) { updates.push('phone = ?'); params.push(phone); }
+      if (profileImage !== null) { updates.push('profileImage = ?'); params.push(profileImage); }
+      if (location !== null) { updates.push('location = ?'); params.push(location); }
+
+      if (updates.length === 0) return res.json({ message: 'No changes provided' });
+
+      params.push(username);
+      const sql = `UPDATE users SET ${updates.join(', ')} WHERE username = ?`;
+      db.run(sql, params, function(err) {
+        if (err) {
+          console.error('Error updating user:', err.message);
+          return res.status(500).json({ message: 'Error updating user' });
+        }
+        return res.json({ message: 'Settings updated' });
+      });
+    } else {
+      // Insert new user record if not found; require at least email & password to create
+      if (!email || !password) return res.status(400).json({ message: 'Email and password required to create account' });
+      db.run(`INSERT INTO users (username, email, password, phone, profileImage, location) VALUES (?, ?, ?, ?, ?, ?)`,
+        [username, email, password, phone, profileImage, location], function(err) {
+          if (err) {
+            console.error('Error creating user:', err.message);
+            return res.status(500).json({ message: 'Error creating user' });
+          }
+          // Set cookie for newly created user
+          res.setHeader('Set-Cookie', `username=${encodeURIComponent(username)}; Path=/; Max-Age=${7 * 24 * 60 * 60}`);
+          return res.json({ message: 'Account created' });
+      });
+    }
+  });
 });
 
 // Save edits from edit.html into edit.db (insert or update)
