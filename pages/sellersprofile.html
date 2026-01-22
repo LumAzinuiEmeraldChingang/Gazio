@@ -220,21 +220,66 @@ document.addEventListener('DOMContentLoaded', function () {
   fetch(endpoint).then(r => r.json()).then(data => {
     if (!data) return;
     if (data.name && usernameEl) usernameEl.textContent = data.name;
-    // profile image
+    // profile image - support URL, data URL, base64, or object ({contentType,data} or {url})
     const profileLeft = document.querySelector('.profile-left');
     if (profileLeft) {
+      profileLeft.innerHTML = '';
+      const img = document.createElement('img');
+      img.alt = 'Profile';
+      img.style.width = '100%';
+      img.style.height = '100%';
+      img.style.objectFit = 'cover';
+      img.style.borderRadius = '50%';
+
+      function showInitials() {
+        const initials = (data.name ? data.name.split(' ').map(s => s[0]).slice(0,2).join('') : 'P').toUpperCase();
+        const span = document.createElement('div');
+        span.textContent = initials;
+        span.style.width = '100%';
+        span.style.height = '100%';
+        span.style.display = 'flex';
+        span.style.alignItems = 'center';
+        span.style.justifyContent = 'center';
+        span.style.fontSize = '24px';
+        span.style.color = '#64748b';
+        profileLeft.appendChild(span);
+      }
+
       if (data.profileImage) {
-        profileLeft.innerHTML = '';
-        const img = document.createElement('img');
-        img.src = data.profileImage;
-        img.alt = 'Profile';
-        img.style.width = '100%';
-        img.style.height = '100%';
-        img.style.objectFit = 'cover';
-        img.style.borderRadius = '50%';
-        profileLeft.appendChild(img);
+        let src = '';
+        if (typeof data.profileImage === 'object') {
+          const contentType = data.profileImage.contentType || data.profileImage.mimetype || data.profileImage.mime || data.profileImage.type;
+          const b64 = data.profileImage.data || data.profileImage.base64 || data.profileImage.b64;
+          if (b64 && contentType) {
+            src = `data:${contentType};base64,${b64}`;
+          } else if (typeof data.profileImage.url === 'string') {
+            src = data.profileImage.url;
+          }
+        } else if (typeof data.profileImage === 'string') {
+          if (data.profileImage.startsWith('data:') || data.profileImage.startsWith('http') || data.profileImage.startsWith('/')) {
+            src = data.profileImage;
+          } else {
+            const isBase64 = /^[A-Za-z0-9+/=\s]+$/.test(data.profileImage);
+            if (isBase64) {
+              src = `data:image/png;base64,${data.profileImage}`;
+            } else {
+              src = data.profileImage;
+            }
+          }
+        }
+
+        if (src) {
+          img.src = src;
+          img.addEventListener('error', function () {
+            profileLeft.removeChild(img);
+            showInitials();
+          });
+          profileLeft.appendChild(img);
+        } else {
+          showInitials();
+        }
       } else {
-        // keep placeholder text
+        showInitials();
       }
     }
 
