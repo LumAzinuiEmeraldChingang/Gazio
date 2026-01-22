@@ -32,13 +32,13 @@ To streamline gas procurement by improving accessibility, transparency, and conv
 
 - Frontend: HTML, CSS, JavaScript (React or Angular)
 - Backend: Node.js (Express.js)
-- Database: MongoDB
+- Database: SQLite
 
 ## Setup
 
-1. Clone the repository: `git clone https://github.com/your-repo/gazio.git`
+1. Clone the repository: `git clone https://github.com/LumAzinuiEmeraldChingang/Gazio.git`
 2. Install dependencies: `npm install`
-3. Start the server: `npm start`
+3. Start the server: `npm start` or node server.js
 
 ## Contributing
 
