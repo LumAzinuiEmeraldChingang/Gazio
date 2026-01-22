@@ -286,6 +286,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 div.setAttribute('data-expires', String(r.expiresAt));
                 div.setAttribute('data-reservation-id', r.id);
                 div.setAttribute('data-price', String(r.price || 0));
+                div.setAttribute('data-seller', String(r.seller || ''));
                 div.setAttribute('data-qty', String(r.qty || 1));
                 const date = new Date(r.reservedAt || Date.now()).toLocaleString();
                 const safeBrand = (r.brand||'').replace(/</g,'&lt;');
