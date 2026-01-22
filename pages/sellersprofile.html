@@ -131,6 +131,11 @@ body {
 .reserve-btn:hover {
   background: #16a34a;
 }
+.reserve-btn:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
 .gas-right {
   display: flex;
   flex-direction: column;
@@ -191,16 +196,42 @@ document.addEventListener("click", function (e) {
   // Plus button
   if (e.target.textContent === "+") {
     const input = e.target.previousElementSibling;
-    input.value = parseInt(input.value || 1) + 1;
+    if (!input) return;
+    const min = parseInt(input.min) || 1;
+    const max = parseInt(input.max);
+    const current = parseInt(input.value || min);
+    if (!Number.isNaN(max)) {
+      if (current < max) input.value = current + 1;
+      else input.value = max;
+    } else {
+      input.value = current + 1;
+    }
   }
   // Minus button
   if (e.target.textContent === "-") {
     const input = e.target.nextElementSibling;
+    if (!input) return;
     const min = parseInt(input.min) || 1;
     const current = parseInt(input.value || min);
     if (current > min) {
       input.value = current - 1;
+    } else {
+      input.value = min;
     }
+  }
+});
+
+// clamp manual numeric input to min/max
+document.addEventListener('input', function (e) {
+  const el = e.target;
+  if (el && el.matches && el.matches('input[type="number"]')) {
+    const min = parseInt(el.min) || 1;
+    const max = parseInt(el.max);
+    let val = parseInt(el.value || min);
+    if (Number.isNaN(val)) val = min;
+    if (!Number.isNaN(max)) val = Math.max(min, Math.min(max, val));
+    else val = Math.max(min, val);
+    if (String(el.value) !== String(val)) el.value = val;
   }
 });
 </script>
@@ -297,15 +328,15 @@ document.addEventListener('DOMContentLoaded', function () {
         const price = b.price != null ? b.price : 0;
         const available = qty > 0 ? 'Available' : 'Out of stock';
         return `
-          <div class="gas-card">
+          <div class="gas-card" data-available="${qty}">
             <div class="gas-left">
               <div class="gas-image">${brand}</div>
               <div class="qty-box">
                 <button class="qty-minus">-</button>
-                <input type="number" value="1" min="1">
+                <input type="number" value="1" min="1" max="${qty}">
                 <button class="qty-plus">+</button>
               </div>
-              <button class="reserve-btn">Reserve</button>
+              <button class="reserve-btn" ${qty > 0 ? '' : 'disabled'}>Reserve</button>
             </div>
             <div class="gas-right">
               <div>Gas Name: ${brand}</div>
@@ -321,6 +352,76 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }).catch(err => {
     console.error('profile-data error', err);
+  });
+});
+</script>
+
+<script>
+// Reserve button handler: save reservation to localStorage and notify user
+document.addEventListener('DOMContentLoaded', function () {
+  const grid = document.getElementById('gas-grid');
+  if (!grid) return;
+
+  grid.addEventListener('click', function (ev) {
+    const btn = ev.target.closest('.reserve-btn');
+    if (!btn) return;
+    const card = btn.closest('.gas-card');
+    if (!card) return;
+
+    // Get brand (from gas-right first div like 'Gas Name: BRAND')
+    const gasRight = card.querySelector('.gas-right');
+    let brand = '';
+    if (gasRight) {
+      const firstDiv = gasRight.querySelector('div');
+      if (firstDiv) brand = firstDiv.textContent.replace(/^\s*Gas Name:\s*/i, '').trim();
+    }
+
+    const qtyInput = card.querySelector('input[type="number"]');
+    const qty = qtyInput ? parseInt(qtyInput.value || '1', 10) : 1;
+    const available = parseInt(card.getAttribute('data-available') || '0', 10);
+    if (!Number.isNaN(available) && qty > available) {
+      try { alert(`Cannot reserve ${qty} — only ${available} in stock`); } catch(e){}
+      // clamp the input to available
+      if (qtyInput) qtyInput.value = Math.max(1, available);
+      return;
+    }
+
+    // try to read the price from the gas-right area (expects 'Price: X CFA')
+    let price = '';
+    if (gasRight) {
+      const nodes = Array.from(gasRight.querySelectorAll('div'));
+      for (const n of nodes) {
+        const t = n.textContent || '';
+        const m = t.match(/Price:\s*([0-9,.]+)/i);
+        if (m) { price = m[1].replace(/,/g,''); break; }
+      }
+    }
+
+    const reservation = {
+      id: 'res-' + Date.now(),
+      brand: brand || 'Unknown',
+      qty: qty || 1,         // quantity reserved
+      price: price || 0,    // price per bottle
+      reservedAt: Date.now(),
+      // reservation expiry: 5 hours from reservation
+      expiresAt: Date.now() + 5 * 60 * 60 * 1000
+    };
+
+    try {
+      const raw = localStorage.getItem('reservations');
+      const list = raw ? JSON.parse(raw) : [];
+      list.push(reservation);
+      localStorage.setItem('reservations', JSON.stringify(list));
+    } catch (e) {
+      console.error('Unable to save reservation', e);
+    }
+
+    // simple popup notification
+    try { alert(`You have reserved ${reservation.qty} x ${reservation.brand}`); } catch(e) {}
+
+    // optional: disable button briefly to prevent duplicate clicks
+    btn.disabled = true;
+    setTimeout(() => btn.disabled = false, 1500);
   });
 });
 </script>
