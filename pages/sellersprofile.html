@@ -220,9 +220,29 @@ document.addEventListener('DOMContentLoaded', function () {
   fetch(endpoint).then(r => r.json()).then(data => {
     if (!data) return;
     if (data.name && usernameEl) usernameEl.textContent = data.name;
-    // location/phone not stored; leave placeholders or use first bottle.phone
-      if (data.bottles && data.bottles.length) {
-      if (phoneEl && !phoneEl.textContent.trim()) phoneEl.textContent = data.bottles[0].phone || '';
+    // profile image
+    const profileLeft = document.querySelector('.profile-left');
+    if (profileLeft) {
+      if (data.profileImage) {
+        profileLeft.innerHTML = '';
+        const img = document.createElement('img');
+        img.src = data.profileImage;
+        img.alt = 'Profile';
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.style.objectFit = 'cover';
+        img.style.borderRadius = '50%';
+        profileLeft.appendChild(img);
+      } else {
+        // keep placeholder text
+      }
+    }
+
+    // Use explicit profile fields when available, otherwise fall back to bottles
+    if (locationEl) locationEl.textContent = data.location || (data.bottles && data.bottles[0] && data.bottles[0].phone ? 'Location' : 'Location');
+    if (phoneEl) phoneEl.textContent = 'Phone: ' + (data.phone || (data.bottles && data.bottles[0] && data.bottles[0].phone) || '');
+    if (data.bottles && data.bottles.length) {
+      // phone already set above
       // create card for each bottle up to 9
       const bottles = data.bottles.slice(0, 9);
         // available box removed; no additional UI here
