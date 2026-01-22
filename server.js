@@ -132,7 +132,23 @@ app.get('/', (req, res) => {
 });
 
 app.get('/home', (req, res) => {
-  res.sendFile(path.join(__dirname, 'pages', 'home.html'));
+  const cookies = parseCookies(req);
+  const username = cookies.username;
+  if (!username) {
+    return res.redirect('/signup');
+  }
+  db.get(`SELECT username FROM users WHERE username = ?`, [username], (err, row) => {
+    if (err) {
+      console.error('Error checking user for /home:', err && err.message);
+      return res.redirect('/signup');
+    }
+    if (!row) {
+      // clear cookie and redirect to signup
+      res.setHeader('Set-Cookie', `username=; Path=/; Max-Age=0`);
+      return res.redirect('/signup');
+    }
+    return res.sendFile(path.join(__dirname, 'pages', 'home.html'));
+  });
 });
 
 app.get('/about', (req, res) => {
@@ -366,4 +382,28 @@ app.get('/image/:name', (req, res) => {
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
+});
+
+// Decrement bottle quantity for a specified seller (used when a reservation is collected)
+app.post('/decrement-bottle', (req, res) => {
+  const { seller, brand, qty } = req.body || {};
+  if (!seller || !brand) return res.status(400).json({ error: 'seller and brand required' });
+  const dec = Number(qty) || 0;
+  // fetch current quantity then set new quantity = max(0, current - dec)
+  bottleDb.get(`SELECT quantity FROM bottles WHERE user = ? AND lower(brand) = lower(?)`, [seller, brand], (err, row) => {
+    if (err) {
+      console.error('Error reading bottle for decrement:', err.message);
+      return res.status(500).json({ error: 'Error reading bottle' });
+    }
+    if (!row) return res.status(404).json({ error: 'Bottle not found' });
+    const current = Number(row.quantity) || 0;
+    const updated = Math.max(0, current - dec);
+    bottleDb.run(`UPDATE bottles SET quantity = ? WHERE user = ? AND lower(brand) = lower(?)`, [updated, seller, brand], function(updateErr) {
+      if (updateErr) {
+        console.error('Error updating bottle quantity:', updateErr.message);
+        return res.status(500).json({ error: 'Error updating bottle' });
+      }
+      return res.json({ success: true, brand, seller, previous: current, updated });
+    });
+  });
 });

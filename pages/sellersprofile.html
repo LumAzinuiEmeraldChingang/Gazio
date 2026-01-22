@@ -328,8 +328,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const qty = b.quantity != null ? b.quantity : 0;
         const price = b.price != null ? b.price : 0;
         const available = qty > 0 ? 'Available' : 'Out of stock';
+        const sellerName = (viewUser && viewUser.length) ? viewUser : (data.name || '');
         return `
-          <div class="gas-card" data-available="${qty}">
+          <div class="gas-card" data-available="${qty}" data-seller="${sellerName}">
             <div class="gas-left">
               <div class="gas-image"><img data-brand="${rawBrand}" src="images/gas-placeholder.png" alt="${brand}" style="width:100%;height:100%;object-fit:cover;border-radius:4px"></div>
               <div class="qty-box">
@@ -432,8 +433,10 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     }
 
+    const seller = card.getAttribute('data-seller') || '';
     const reservation = {
       id: 'res-' + Date.now(),
+      seller: seller,
       brand: brand || 'Unknown',
       qty: qty || 1,         // quantity reserved
       price: price || 0,    // price per bottle
