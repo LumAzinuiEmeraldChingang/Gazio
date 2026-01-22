@@ -7,8 +7,9 @@ const app = express();
 const port = 3000;
 
 // Middleware
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+// Allow larger payloads (images as data URLs can be large)
+app.use(bodyParser.urlencoded({ extended: true, limit: '5mb' }));
+app.use(bodyParser.json({ limit: '5mb' }));
 app.use(express.static(path.join(__dirname, '.'))); // Serve static files from root
 app.use(express.static(path.join(__dirname, 'pages'))); // Serve HTML files from pages
 
@@ -43,6 +44,28 @@ const db = new sqlite3.Database('./users.db', (err) => {
       } else {
         console.log('Users table created or already exists.');
       }
+    });
+
+    // Ensure users table has additional columns for profile data
+    db.serialize(() => {
+      db.all(`PRAGMA table_info(users)`, (err, rows) => {
+        if (err) {
+          console.error('Error reading users table info:', err && err.message);
+          return;
+        }
+        const cols = (rows || []).map(r => r.name);
+        const addIfMissing = (col, type) => {
+          if (!cols.includes(col)) {
+            db.run(`ALTER TABLE users ADD COLUMN ${col} ${type}`, (err) => {
+              if (err) console.error(`Error adding column ${col}:`, err.message);
+              else console.log(`Added column ${col} to users table.`);
+            });
+          }
+        };
+        addIfMissing('phone', 'TEXT');
+        addIfMissing('profileImage', 'TEXT');
+        addIfMissing('location', 'TEXT');
+      });
     });
   }
 });
@@ -172,25 +195,69 @@ app.get('/profile-data', (req, res) => {
   const cookies = parseCookies(req);
   const username = queryUser || cookies.username;
   if (!username) return res.json({});
-  // return bottles for this user
-  bottleDb.all(`SELECT brand, quantity, price, phone FROM bottles WHERE user = ?`, [username], (err, rows) => {
-    if (err) {
-      console.error('Error reading bottles:', err.message);
+  // fetch user profile fields from users table, then return bottles
+  db.get(`SELECT username, email, phone, profileImage, location FROM users WHERE username = ?`, [username], (uErr, userRow) => {
+    if (uErr) {
+      console.error('Error reading user profile:', uErr.message);
       return res.status(500).json({});
     }
-    const bottles = (rows || []).map(r => ({
-      brand: r.brand,
-      quantity: r.quantity || 0,
-      price: r.price || 0,
-      phone: r.phone || ''
-    }));
-    res.json({ name: username, bottles });
+    bottleDb.all(`SELECT brand, quantity, price, phone FROM bottles WHERE user = ?`, [username], (err, rows) => {
+      if (err) {
+        console.error('Error reading bottles:', err.message);
+        return res.status(500).json({});
+      }
+      const bottles = (rows || []).map(r => ({
+        brand: r.brand,
+        quantity: r.quantity || 0,
+        price: r.price || 0,
+        phone: r.phone || ''
+      }));
+      const profile = userRow || { username };
+      res.json({ name: profile.username, email: profile.email || null, phone: profile.phone || null, profileImage: profile.profileImage || null, location: profile.location || null, bottles });
+    });
   });
 });
 
 // Add other routes as needed
 app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, 'pages', 'Login.html'));
+});
+
+// Persist user settings (update fields provided). Uses cookie to identify current user.
+app.put('/api/settings', (req, res) => {
+  const cookies = parseCookies(req);
+  const currentUser = cookies.username;
+  if (!currentUser) return res.status(400).json({ message: 'Not authenticated' });
+
+  const { username, email, password, location, profileImage, phone } = req.body || {};
+
+  const updates = [];
+  const params = [];
+  if (username) { updates.push('username = ?'); params.push(String(username)); }
+  if (email) { updates.push('email = ?'); params.push(String(email)); }
+  if (password) { updates.push('password = ?'); params.push(String(password)); }
+  if (phone) { updates.push('phone = ?'); params.push(String(phone)); }
+  if (profileImage) { updates.push('profileImage = ?'); params.push(String(profileImage)); }
+  if (location) { updates.push('location = ?'); params.push(String(location)); }
+
+  if (updates.length === 0) return res.json({ message: 'No changes provided' });
+
+  params.push(currentUser);
+  const sql = `UPDATE users SET ${updates.join(', ')} WHERE username = ?`;
+  db.run(sql, params, function(err) {
+    if (err) {
+      console.error('Error updating settings:', err.message);
+      if (err.message && err.message.includes('UNIQUE constraint failed')) {
+        return res.status(400).json({ message: 'Username or email already exists' });
+      }
+      return res.status(500).json({ message: 'Error saving settings' });
+    }
+    // If username changed, update cookie so session continues under new name
+    if (username) {
+      res.setHeader('Set-Cookie', `username=${encodeURIComponent(username)}; Path=/; Max-Age=${7 * 24 * 60 * 60}`);
+    }
+    return res.json({ message: 'Settings saved' });
+  });
 });
 
 // Save edits from edit.html into edit.db (insert or update)

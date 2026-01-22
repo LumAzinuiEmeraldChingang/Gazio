@@ -49,6 +49,7 @@ body {
     background-color: #ddd;
     margin: auto;
 }
+.avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block; }
 .username {
     font-size: 1.4rem;
     font-weight: bold;
@@ -371,6 +372,17 @@ document.addEventListener('DOMContentLoaded', function() {
     fetch('/profile-data').then(r => r.json()).then(data => {
         if (!data) return;
         if (data.name) setName(data.name);
+        // show profile image if available
+        if (data.profileImage) {
+            const av = document.querySelector('.avatar');
+            if (av) {
+                av.innerHTML = '';
+                const img = document.createElement('img');
+                img.src = data.profileImage;
+                img.alt = 'Profile picture';
+                av.appendChild(img);
+            }
+        }
 
         const posts = document.getElementById('posts');
         const bottles = Array.isArray(data.bottles) ? data.bottles : [];
