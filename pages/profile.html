@@ -447,13 +447,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const cards = bottles.map(b => {
             const brand = (b.brand || '').replace(/</g,'&lt;');
+            const rawBrand = (b.brand || '').replace(/"/g,'&quot;');
             const qty = b.quantity != null ? b.quantity : 0;
             const price = b.price != null ? b.price : 0;
             const stock_status = qty > 0 ? 'In stock' : 'Out of stock';
             return `
             <div class="gas-card">
                 <div class="gas-bottle gaz">
-                    <img src="images/gas-placeholder.png" alt="Gas">
+                    <img data-brand="${rawBrand}" src="images/gas-placeholder.png" alt="${brand}">
                     <div class="gas-name">${brand}</div>
                 </div>
                 <div class="details">
@@ -462,13 +463,56 @@ document.addEventListener('DOMContentLoaded', function() {
                     <!-- Quarter box removed -->
                     <div class="info-box stock-status-box"><span class="stock_status">${stock_status}</span></div>
                     <div style="margin-top:8px">
-                        <button class="delete-btn" data-brand="${(b.brand||'').replace(/"/g,'&quot;')}" style="background:#e74c3c;color:white;border:none;padding:6px 10px;border-radius:6px;cursor:pointer;">Delete</button>
+                        <button class="delete-btn" data-brand="${rawBrand}" style="background:#e74c3c;color:white;border:none;padding:6px 10px;border-radius:6px;cursor:pointer;">Delete</button>
                     </div>
                 </div>
             </div>`;
         }).join('\n');
 
         posts.innerHTML = cards;
+
+        // Attempt to load brand-specific bottle images. Try several filename variants and fall back to placeholder.
+        (function loadBottleImages(){
+            const placeholdersrc = 'images/gas-placeholder.png';
+            const exts = ['.jpeg', '.jpg', '.png'];
+            function variants(name){
+                if(!name) return [];
+                const v = [];
+                const cleaned = name.trim();
+                const words = cleaned.split(/\s+/);
+                // original
+                v.push(cleaned);
+                // joined
+                v.push(words.join(''));
+                // lowercase
+                v.push(cleaned.toLowerCase());
+                v.push(words.join('').toLowerCase());
+                // capitalize each word
+                v.push(words.map(w=>w.charAt(0).toUpperCase()+w.slice(1).toLowerCase()).join(''));
+                return Array.from(new Set(v)).filter(Boolean);
+            }
+
+            document.querySelectorAll('.gas-bottle img[data-brand]').forEach(img => {
+                const brand = img.getAttribute('data-brand') || '';
+                const tries = [];
+                variants(brand).forEach(base => exts.forEach(ext => tries.push('images/' + base + ext)));
+
+                // try candidates sequentially using onerror fallback
+                let i = 0;
+                function tryNext(){
+                    if(i >= tries.length){
+                        img.src = placeholdersrc;
+                        return;
+                    }
+                    const candidate = tries[i++];
+                    const tester = new Image();
+                    tester.onload = function(){ img.src = candidate; };
+                    tester.onerror = tryNext;
+                    tester.src = candidate;
+                }
+                tryNext();
+            });
+        })();
 
         // Attach delete handler via event delegation
         posts.addEventListener('click', async function (ev) {
