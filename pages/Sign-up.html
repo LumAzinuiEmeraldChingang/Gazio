@@ -81,10 +81,47 @@
       </div>
       <div class="form-group">
         <label for="confirm-password">Confirm Password:</label>
-        <input type="password" id="confirm-password" name="confirm-password" required>
+            <input type="password" id="confirm-password" name="confirm-password" required>
+            <div id="confirm-error" class="error-msg" style="display:none; color:#b00020; font-size:12px; margin-top:6px;"></div>
       </div>
       <button type="submit" class="signup-btn">Sign up</button>
     </form>
+        <script>
+          (function () {
+            const form = document.querySelector('form');
+            const pwd = document.getElementById('signup-password');
+            const confirm = document.getElementById('confirm-password');
+            const err = document.getElementById('confirm-error');
+
+            function showError(msg) {
+              err.textContent = msg;
+              err.style.display = 'block';
+            }
+            function hideError() {
+              err.textContent = '';
+              err.style.display = 'none';
+            }
+
+            form.addEventListener('submit', function (e) {
+              if (!pwd || !confirm) return; // safety
+              if (pwd.value !== confirm.value) {
+                e.preventDefault();
+                showError('Passwords do not match');
+                confirm.focus();
+                return false;
+              }
+              hideError();
+            });
+
+            // live feedback: hide error when user corrects
+            confirm.addEventListener('input', function () {
+              if (pwd.value === confirm.value) hideError();
+            });
+            pwd.addEventListener('input', function () {
+              if (pwd.value === confirm.value) hideError();
+            });
+          })();
+        </script>
     <p style="text-align: center; margin-top: 15px;">If you already have an account, <a href="Login.html" style="color: darkcyan;">login</a></p>
   </div>
 </body>
