@@ -48,6 +48,11 @@
   #phoneNumber { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 16px; }
   .phone-error { color: #b00020; font-size: 13px; margin-top: 6px; display: none; }
 
+  /* Location row */
+  .location-row { display: flex; gap: 8px; align-items: flex-start; margin: 8px 0 14px; }
+  .location-input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 16px; min-height: 64px; resize: vertical; }
+  .location-button { padding: 10px 12px; border-radius: 6px; border: none; background-color: #1976d2; color: #fff; cursor: pointer; }
+
   input {
     width: 100%;
     padding: 10px;
@@ -128,6 +133,13 @@
     </div>
     <div id="phoneError" class="phone-error">Please enter a valid Cameroon number (8 or 9 digits).</div>
   </div>
+
+  <!-- Location input -->
+  <label for="location">Location</label>
+  <div class="location-row">
+    <textarea id="location" class="location-input" placeholder="Street, City, Country or use button" rows="3"></textarea>
+    <button type="button" id="useLocationBtn" class="location-button" onclick="getLocation()">Use my location</button>
+  </div>
   
   <label>Password</label>
   <input type="password" id="password" placeholder="New password" oninput="checkPasswordStrength()">
@@ -188,7 +200,8 @@ function checkPasswordStrength() {
 async function updateSettings() {
     const username = document.getElementById('username').value;
     const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
+  const password = document.getElementById('password').value;
+  const location = document.getElementById('location') ? document.getElementById('location').value : null;
   // include profile image if selected (data URL)
   const profileImg = document.getElementById('profilePreview').src || null;
 
@@ -207,11 +220,38 @@ async function updateSettings() {
     const response = await fetch('/api/settings', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, email, password, profileImage: profileImg, phone: rawPhone ? '+237' + rawPhone : null })
+      body: JSON.stringify({ username, email, password, location, profileImage: profileImg, phone: rawPhone ? '+237' + rawPhone : null })
     });
 
     const result = await response.json();
     document.getElementById('status').innerText = result.message;
+}
+
+// Try to get user's geolocation (lat,lon) and populate the location field
+function getLocation() {
+  const input = document.getElementById('location');
+  if (!navigator.geolocation) {
+    input.value = 'Geolocation not supported';
+    return;
+  }
+  input.value = 'Locating...';
+  navigator.geolocation.getCurrentPosition(async (pos) => {
+    const lat = pos.coords.latitude.toFixed(5);
+    const lon = pos.coords.longitude.toFixed(5);
+    // Save a simple lat,lon placeholder. The app can replace with reverse-geocoding later.
+    const value = `Lat: ${lat}, Lon: ${lon}`;
+    input.value = value;
+    try { localStorage.setItem('user_location', value); } catch (e) { /* ignore */ }
+  }, (err) => {
+    input.value = 'Unable to retrieve location';
+  }, { timeout: 10000 });
+}
+
+function loadSavedLocation() {
+  try {
+    const saved = localStorage.getItem('user_location');
+    if (saved && document.getElementById('location')) document.getElementById('location').value = saved;
+  } catch (e) { }
 }
 
 // Profile image preview handling
