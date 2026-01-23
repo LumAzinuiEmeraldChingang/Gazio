@@ -123,6 +123,7 @@
   
   <label>Email</label>
   <input type="email" id="email" placeholder="New email">
+  <div id="emailError" style="display:none; color:#b00020; font-size:13px; margin-top:-8px; margin-bottom:8px;">Incorrect email format</div>
   
   <!-- Cameroon phone card -->
   <div class="phone-card">
@@ -205,6 +206,21 @@ async function updateSettings() {
   // include profile image if selected (data URL)
   const profileImg = document.getElementById('profilePreview').src || null;
 
+    // email validation: must start with lowercase letter and end with @gmail.com
+    const emailEl = document.getElementById('email');
+    const emailErrEl = document.getElementById('emailError');
+    const emailVal = emailEl && emailEl.value ? emailEl.value.trim() : '';
+    const emailRe = /^[a-z][^@]*@gmail\.com$/;
+    if (emailVal && !emailRe.test(emailVal)) {
+      if (emailErrEl) {
+        emailErrEl.style.display = 'block';
+        emailErrEl.innerText = 'Incorrect email format';
+      }
+      return;
+    } else if (emailErrEl) {
+      emailErrEl.style.display = 'none';
+    }
+
     // phone (Cameroon). Input only holds national number (digits after +237)
     const phoneField = document.getElementById('phoneNumber');
     const rawPhone = (phoneField && phoneField.value) ? phoneField.value.replace(/\D/g, '') : '';
@@ -279,6 +295,22 @@ if (phoneInput) {
       err.style.display = 'block';
     } else {
       err.style.display = 'none';
+    }
+  });
+}
+
+// Live validation/hide for email field
+const emailInput = document.getElementById('email');
+if (emailInput) {
+  emailInput.addEventListener('input', function() {
+    const re = /^[a-z][^@]*@gmail\.com$/;
+    const err = document.getElementById('emailError');
+    const val = this.value.trim();
+    if (!val) { if (err) err.style.display = 'none'; return; }
+    if (re.test(val)) {
+      if (err) err.style.display = 'none';
+    } else {
+      if (err) err.style.display = 'block';
     }
   });
 }

@@ -74,6 +74,7 @@
       <div class="form-group">
         <label for="email">Email:</label>
         <input type="email" id="email" name="email" required>
+        <div id="email-error" class="error-msg" style="display:none; color:#b00020; font-size:12px; margin-top:6px;">Incorrect email format</div>
       </div>
       <div class="form-group">
         <label for="signup-password">Password:</label>
@@ -84,6 +85,7 @@
             <input type="password" id="confirm-password" name="confirm-password" required>
             <div id="confirm-error" class="error-msg" style="display:none; color:#b00020; font-size:12px; margin-top:6px;"></div>
       </div>
+      <div id="submit-error" style="display:none; color:#b00020; font-size:13px; margin:8px 0 6px;"></div>
       <button type="submit" class="signup-btn">Sign up</button>
     </form>
         <script>
@@ -92,6 +94,7 @@
             const pwd = document.getElementById('signup-password');
             const confirm = document.getElementById('confirm-password');
             const err = document.getElementById('confirm-error');
+            const submitErr = document.getElementById('submit-error');
 
             function showError(msg) {
               err.textContent = msg;
@@ -102,15 +105,63 @@
               err.style.display = 'none';
             }
 
-            form.addEventListener('submit', function (e) {
+            form.addEventListener('submit', async function (e) {
+              e.preventDefault();
+              // reset errors
+              err.style.display = 'none';
+              if (submitErr) submitErr.style.display = 'none';
+
+              // email format: start with a lowercase letter and end with @gmail.com
+              const emailEl = document.getElementById('email');
+              const emailErrEl = document.getElementById('email-error');
+              const emailVal = emailEl && emailEl.value ? emailEl.value.trim() : '';
+              const emailRe = /^[a-z][^@]*@gmail\.com$/;
+              if (!emailRe.test(emailVal)) {
+                if (emailErrEl) emailErrEl.style.display = 'block';
+                if (emailEl) emailEl.focus();
+                return;
+              } else if (emailErrEl) {
+                emailErrEl.style.display = 'none';
+              }
+
               if (!pwd || !confirm) return; // safety
               if (pwd.value !== confirm.value) {
-                e.preventDefault();
                 showError('Passwords do not match');
                 confirm.focus();
-                return false;
+                return;
               }
-              hideError();
+
+              // submit via fetch to display server messages inline
+              try {
+                const body = new URLSearchParams(new FormData(form));
+                const res = await fetch(form.action, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Accept': 'text/plain' },
+                  body: body.toString()
+                });
+
+                if (res.redirected) {
+                  window.location = res.url;
+                  return;
+                }
+
+                if (!res.ok) {
+                  const text = await res.text();
+                  if (submitErr) {
+                    submitErr.textContent = text || 'Error signing up';
+                    submitErr.style.display = 'block';
+                  }
+                  return;
+                }
+
+                // success (some servers may return 200 without redirect)
+                window.location = '/home';
+              } catch (networkErr) {
+                if (submitErr) {
+                  submitErr.textContent = 'Network error. Please try again.';
+                  submitErr.style.display = 'block';
+                }
+              }
             });
 
             // live feedback: hide error when user corrects
@@ -120,6 +171,16 @@
             pwd.addEventListener('input', function () {
               if (pwd.value === confirm.value) hideError();
             });
+            const emailInput = document.getElementById('email');
+            if (emailInput) {
+              emailInput.addEventListener('input', function () {
+                const re = /^[a-z][^@]*@gmail\.com$/;
+                const el = document.getElementById('email-error');
+                if (re.test(this.value.trim())) {
+                  if (el) el.style.display = 'none';
+                }
+              });
+            }
           })();
         </script>
     <p style="text-align: center; margin-top: 15px;">If you already have an account, <a href="Login.html" style="color: darkcyan;">login</a></p>
