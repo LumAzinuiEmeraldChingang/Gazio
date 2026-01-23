@@ -393,6 +393,50 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 
 <script>
+// Listen for inventory updates from other tabs (via localStorage)
+window.addEventListener('storage', function (ev) {
+  if (ev.key !== 'inventory-update') return;
+  try {
+    const payload = JSON.parse(ev.newValue || '{}');
+    if (!payload || !payload.brand) return;
+    const seller = payload.seller || '';
+    const brand = String(payload.brand || '').toLowerCase();
+    const delta = Number(payload.delta) || 0;
+    // update matching cards: adjust data-available, Quantity text, available-text and controls
+    document.querySelectorAll('.gas-card').forEach(card => {
+      const sellerAttr = card.getAttribute('data-seller') || '';
+      const nameDiv = card.querySelector('.gas-right div');
+      const cardBrand = nameDiv ? String(nameDiv.textContent || '').replace(/^\s*Gas Name:\s*/i,'').trim().toLowerCase() : '';
+      if (cardBrand === brand && (sellerAttr === '' || sellerAttr === seller)) {
+        const prevAvailable = parseInt(card.getAttribute('data-available') || '0', 10) || 0;
+        const updated = Math.max(0, prevAvailable + delta);
+        card.setAttribute('data-available', String(updated));
+
+        // update the Quantity display (second div inside .gas-right)
+        const qtyDiv = card.querySelector('.gas-right div:nth-child(2)');
+        if (qtyDiv) qtyDiv.textContent = 'Quantity: ' + updated;
+
+        // update the visible status text
+        const statusEl = card.querySelector('.available-text');
+        if (statusEl) statusEl.textContent = updated > 0 ? 'Available' : 'Out of stock';
+
+        // update reserve button disabled state
+        const reserveBtn = card.querySelector('.reserve-btn');
+        if (reserveBtn) reserveBtn.disabled = updated <= 0;
+
+        // update numeric input constraints
+        const input = card.querySelector('input[type="number"]');
+        if (input) {
+          input.max = String(Math.max(1, updated));
+          if (parseInt(input.value || '1', 10) > updated) input.value = String(Math.max(1, updated));
+        }
+      }
+    });
+  } catch (e) { console.error('inventory-update storage handler error', e); }
+});
+</script>
+
+<script>
 // Reserve button handler: save reservation to localStorage and notify user
 document.addEventListener('DOMContentLoaded', function () {
   const grid = document.getElementById('gas-grid');
@@ -445,21 +489,58 @@ document.addEventListener('DOMContentLoaded', function () {
       expiresAt: Date.now() + 5 * 60 * 60 * 1000
     };
 
-    try {
-      const raw = localStorage.getItem('reservations');
-      const list = raw ? JSON.parse(raw) : [];
-      list.push(reservation);
-      localStorage.setItem('reservations', JSON.stringify(list));
-    } catch (e) {
-      console.error('Unable to save reservation', e);
-    }
-
-    // simple popup notification
-    try { alert(`You have reserved ${reservation.qty} x ${reservation.brand}`); } catch(e) {}
-
-    // optional: disable button briefly to prevent duplicate clicks
+    // disable button to prevent duplicate clicks while we update server
     btn.disabled = true;
-    setTimeout(() => btn.disabled = false, 1500);
+
+    // send decrement request to server so inventory is reduced at reservation time
+    fetch('/decrement-bottle', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ seller: reservation.seller, brand: reservation.brand, qty: reservation.qty })
+    }).then(async res => {
+      if (!res.ok) {
+        const body = await res.json().catch(()=>({}));
+        throw new Error(body && body.error ? body.error : 'Failed to decrement on server');
+      }
+
+      // update card UI to reflect new available quantity
+      const prevAvailable = parseInt(card.getAttribute('data-available') || '0', 10) || 0;
+      const newAvailable = Math.max(0, prevAvailable - reservation.qty);
+      card.setAttribute('data-available', String(newAvailable));
+      const qtyDisplay = card.querySelector('.gas-right div:nth-child(2)'); // 'Quantity: X'
+      if (qtyDisplay) {
+        qtyDisplay.textContent = 'Quantity: ' + newAvailable;
+      }
+      const availText = card.querySelector('.available-text');
+      if (availText) availText.textContent = newAvailable > 0 ? 'Available' : 'Out of stock';
+      // disable reserve button if no stock left
+      if (newAvailable <= 0) {
+        btn.disabled = true;
+      }
+
+      // persist reservation locally as pending
+      try {
+        const raw = localStorage.getItem('reservations');
+        const list = raw ? JSON.parse(raw) : [];
+        list.push(reservation);
+        localStorage.setItem('reservations', JSON.stringify(list));
+      } catch (e) { console.error('Unable to save reservation', e); }
+
+      // notify other tabs/pages to decrement inventory (delta negative)
+      try {
+        const payload = { seller: reservation.seller, brand: reservation.brand, delta: -Number(reservation.qty), ts: Date.now() };
+        localStorage.setItem('inventory-update', JSON.stringify(payload));
+      } catch (e) {}
+
+      try { alert(`You have reserved ${reservation.qty} x ${reservation.brand}`); } catch(e) {}
+      // leave button disabled briefly so user sees the reservation state
+      setTimeout(() => { if (card && newAvailable > 0) btn.disabled = false; }, 1500);
+    }).catch(err => {
+      console.error('Reserve/decrement error', err);
+      try { alert('Unable to reserve: ' + (err && err.message ? err.message : 'server error')); } catch(e){}
+      // re-enable button so the user can try again
+      btn.disabled = false;
+    });
   });
 });
 </script>
