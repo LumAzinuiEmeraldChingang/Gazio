@@ -380,6 +380,27 @@ app.get('/image/:name', (req, res) => {
   });
 });
 
+// Return list of sellers who have bottles (public listing)
+app.get('/sellers', (req, res) => {
+  const q = req.query && (req.query.q || req.query.query) ? String(req.query.q || req.query.query).toLowerCase().trim() : null;
+  let sql = `SELECT DISTINCT b.user as username, u.profileImage as profileImage, u.location as location, u.phone as phone
+                FROM bottles b
+                LEFT JOIN users u ON u.username = b.user`;
+  const params = [];
+  if (q) {
+    sql += ` WHERE lower(b.brand) LIKE ?`;
+    params.push(`%${q}%`);
+  }
+  bottleDb.all(sql, params, (err, rows) => {
+    if (err) {
+      console.error('Error fetching sellers:', err && err.message);
+      return res.status(500).json({ error: 'Error fetching sellers' });
+    }
+    const sellers = (rows || []).map(r => ({ username: r.username, profileImage: r.profileImage || null, location: r.location || null, phone: r.phone || null }));
+    return res.json({ sellers });
+  });
+});
+
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
@@ -405,5 +426,43 @@ app.post('/decrement-bottle', (req, res) => {
       }
       return res.json({ success: true, brand, seller, previous: current, updated });
     });
+  });
+});
+
+// Increment bottle quantity for a specified seller (used when a reservation is cancelled)
+app.post('/increment-bottle', (req, res) => {
+  const { seller, brand, qty } = req.body || {};
+  if (!seller || !brand) return res.status(400).json({ error: 'seller and brand required' });
+  const inc = Number(qty) || 0;
+  bottleDb.get(`SELECT quantity FROM bottles WHERE user = ? AND lower(brand) = lower(?)`, [seller, brand], (err, row) => {
+    if (err) {
+      console.error('Error reading bottle for increment:', err.message);
+      return res.status(500).json({ error: 'Error reading bottle' });
+    }
+    if (!row) return res.status(404).json({ error: 'Bottle not found' });
+    const current = Number(row.quantity) || 0;
+    const updated = current + inc;
+    bottleDb.run(`UPDATE bottles SET quantity = ? WHERE user = ? AND lower(brand) = lower(?)`, [updated, seller, brand], function(updateErr) {
+      if (updateErr) {
+        console.error('Error updating bottle quantity:', updateErr.message);
+        return res.status(500).json({ error: 'Error updating bottle' });
+      }
+      return res.json({ success: true, brand, seller, previous: current, updated });
+    });
+  });
+});
+
+// Return list of sellers who have bottles (public listing)
+app.get('/sellers', (req, res) => {
+  // return distinct users from bottles table together with profile info when available
+  bottleDb.all(`SELECT DISTINCT b.user as username, u.profileImage as profileImage, u.location as location, u.phone as phone
+                FROM bottles b
+                LEFT JOIN users u ON u.username = b.user`, [], (err, rows) => {
+    if (err) {
+      console.error('Error fetching sellers:', err && err.message);
+      return res.status(500).json({ error: 'Error fetching sellers' });
+    }
+    const sellers = (rows || []).map(r => ({ username: r.username, profileImage: r.profileImage || null, location: r.location || null, phone: r.phone || null }));
+    return res.json({ sellers });
   });
 });

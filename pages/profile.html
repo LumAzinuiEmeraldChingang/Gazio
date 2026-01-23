@@ -299,6 +299,63 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     } catch (e) { console.error('reservations read error', e); }
 
+    // Transaction persistence helpers (scoped per-user)
+    let __currentUser = null;
+    function getCurrentUser() {
+        return new Promise(resolve => {
+            if (__currentUser) return resolve(__currentUser);
+            // try username element first
+            const el = document.querySelector('.username');
+            const text = el && el.textContent ? el.textContent.trim() : '';
+            if (text && text !== '{{username}}') {
+                __currentUser = text;
+                return resolve(__currentUser);
+            }
+            // fallback to /me
+            fetch('/me').then(r => r.json()).then(d => {
+                __currentUser = (d && d.username) ? d.username : 'anonymous';
+                resolve(__currentUser);
+            }).catch(() => { __currentUser = 'anonymous'; resolve(__currentUser); });
+        });
+    }
+
+    function storageKeyFor(user) { return 'transactions:' + String(user || 'anon'); }
+    function loadTransactionsFor(user) {
+        try { return JSON.parse(localStorage.getItem(storageKeyFor(user)) || '[]'); } catch (e) { return []; }
+    }
+    function saveTransactionsFor(user, list) {
+        try { localStorage.setItem(storageKeyFor(user), JSON.stringify(list)); } catch (e) { console.error('saveTransactions error', e); }
+    }
+    function addTransactionEntry(entry) {
+        try {
+            const user = __currentUser || 'anonymous';
+            const list = loadTransactionsFor(user);
+            list.unshift(entry);
+            saveTransactionsFor(user, list);
+            renderTransaction(entry);
+        } catch (e) { console.error('addTransactionEntry error', e); }
+    }
+    function renderTransaction(entry) {
+        const detailsEl = document.querySelector('#transactions .details');
+        if (!detailsEl) return;
+        const div = document.createElement('div');
+        div.className = 'info-box';
+        const dateText = entry.displayDate || (new Date(entry.ts || Date.now()).toLocaleString());
+        const safeBrand = (entry.brand||'').replace(/</g,'&lt;');
+        const statusClass = entry.type === 'collected' ? 'stock' : (entry.type === 'cancelled' ? 'out' : '');
+        const statusLabel = entry.type === 'collected' ? 'Successful' : (entry.type === 'cancelled' ? 'Cancelled' : entry.type || '');
+        div.innerHTML = `Date: ${dateText} | Gas: ${safeBrand} | Price: ${entry.price || ''} CFA | Qty: ${entry.qty || ''}<br>Status: <span class="status-text ${statusClass}">${statusLabel}</span>`;
+        div.setAttribute('data-timestamp', String(entry.ts || Date.now()));
+        detailsEl.appendChild(div);
+    }
+
+    // Render persisted transaction history for current user
+    getCurrentUser().then(user => {
+        const items = loadTransactionsFor(user) || [];
+        if (!items.length) return;
+        items.forEach(it => renderTransaction(it));
+    }).catch(()=>{});
+
     // Setup timers for any Pending status-text using data-expires when present
     document.querySelectorAll('.status-text').forEach(statusSpan => {
         if (statusSpan.textContent.trim() === 'Pending') {
@@ -358,7 +415,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 } catch (e) { console.error('remove reservation error', e); }
             }
 
-            // Collected click logic: mark successful and move into history
+            // Collected click logic: mark successful, persist to history and move into history
             collectBtn.addEventListener('click', function () {
                 clearInterval(interval);
                 // remove reservation if present
@@ -377,31 +434,67 @@ document.addEventListener('DOMContentLoaded', function() {
                 txDiv.removeAttribute('data-expires');
                 txDiv.removeAttribute('data-reservation-id');
 
-                // mark with timestamp and move into the end of the Transaction History (append to details)
-                txDiv.setAttribute('data-timestamp', String(Date.now()));
+                // persist transaction and move into the Transaction History
+                const entry = { type: 'collected', brand: brand, price: price, qty: qty, seller: txDiv.getAttribute('data-seller') || '', ts: Date.now(), displayDate: collectedDate };
+                addTransactionEntry(entry);
+                txDiv.removeAttribute('data-expires');
+                txDiv.removeAttribute('data-reservation-id');
                 const detailsEl = document.querySelector('#transactions .details');
                 if (detailsEl) {
-                    detailsEl.appendChild(txDiv);
+                    // remove the pending element from DOM (txDiv) and let renderTransaction add a fresh copy
+                    try { if (txDiv.parentNode) txDiv.parentNode.removeChild(txDiv); } catch(e){}
                 }
             });
 
-            // Cancel click logic: mark cancelled and move to history with price and qty
+            // Cancel click logic: restore inventory via server, persist cancellation and move to history
             cancelBtn.addEventListener('click', function () {
                 clearInterval(interval);
                 const rid = txDiv.getAttribute('data-reservation-id');
                 if (rid) removeReservationById(rid);
                 const brand = txDiv.textContent.match(/Gas:\s*([^|\n]+)/i) ? (txDiv.textContent.match(/Gas:\s*([^|\n]+)/i)[1].trim()) : '';
                 const price = txDiv.getAttribute('data-price') || '';
-                const qty = txDiv.getAttribute('data-qty') || '';
+                const qty = parseInt(txDiv.getAttribute('data-qty') || '1', 10) || 1;
+                const seller = txDiv.getAttribute('data-seller') || '';
                 const cancelledDate = new Date().toLocaleString();
-                txDiv.innerHTML = `Date: ${cancelledDate} | Gas: ${brand} | Price: ${price} CFA | Qty: ${qty}<br>Status: <span class="status-text out">Cancelled</span>`;
-                txDiv.removeAttribute('data-expires');
-                txDiv.removeAttribute('data-reservation-id');
-                txDiv.setAttribute('data-timestamp', String(Date.now()));
-                const detailsEl = document.querySelector('#transactions .details');
-                if (detailsEl) {
-                    detailsEl.appendChild(txDiv);
-                }
+
+                // call server to increment seller inventory
+                fetch('/increment-bottle', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ seller: seller, brand: brand, qty: qty })
+                }).then(async res => {
+                    if (!res.ok) {
+                        const body = await res.json().catch(()=>({}));
+                        console.error('increment failed', body);
+                    } else {
+                        // notify other tabs/pages via localStorage so they can update UI
+                        try {
+                            const payload = { seller, brand, delta: Number(qty), ts: Date.now() };
+                            localStorage.setItem('inventory-update', JSON.stringify(payload));
+                        } catch (e) { /* ignore storage errors */ }
+
+                        // update any visible cards on this page to reflect increased quantity
+                        document.querySelectorAll('.gas-card').forEach(card => {
+                            const nameEl = card.querySelector('.gas-name');
+                            const sellerAttr = card.getAttribute('data-seller') || '';
+                            if (nameEl && String(nameEl.textContent).trim().toLowerCase() === String(brand).toLowerCase() && (sellerAttr === '' || sellerAttr === seller)){
+                                const availEl = card.querySelector('.available');
+                                if (availEl) {
+                                    const prev = parseInt(availEl.textContent || '0', 10) || 0;
+                                    availEl.textContent = String(prev + qty);
+                                }
+                                const statusEl = card.querySelector('.stock_status');
+                                if (statusEl) statusEl.textContent = 'In stock';
+                            }
+                        });
+                    }
+                }).catch(err => console.error('increment-bottle error', err)).finally(() => {
+                    // persist cancelled transaction and move into history regardless of increment success
+                    const entry = { type: 'cancelled', brand: brand, price: price, qty: qty, seller: seller, ts: Date.now(), displayDate: cancelledDate };
+                    addTransactionEntry(entry);
+                    // remove pending element from DOM
+                    try { if (txDiv.parentNode) txDiv.parentNode.removeChild(txDiv); } catch(e){}
+                });
             });
 
             // Append buttons to transaction
