@@ -165,17 +165,26 @@ app.post('/signup', (req, res) => {
   if (password !== confirmPassword) {
     return res.status(400).send('Passwords do not match');
   }
+  // Ensure username is unique
+  db.get(`SELECT username FROM users WHERE username = ?`, [username], (uErr, uRow) => {
+    if (uErr) return res.status(500).send('Error checking username');
+    if (uRow) return res.status(400).send('Username already exists');
 
-  db.run(`INSERT INTO users (username, email, password) VALUES (?, ?, ?)`, [username, email, password], function(err) {
-    if (err) {
-      if (err.message.includes('UNIQUE constraint failed')) {
-        return res.status(400).send('Username or email already exists');
-      }
-      return res.status(500).send('Error saving user');
-    }
-    // set username cookie so subsequent pages can identify the user
-    res.setHeader('Set-Cookie', `username=${encodeURIComponent(username)}; Path=/; Max-Age=${7 * 24 * 60 * 60}`);
-    res.redirect('/home');
+    // Ensure email is unique
+    db.get(`SELECT email FROM users WHERE email = ?`, [email], (eErr, eRow) => {
+      if (eErr) return res.status(500).send('Error checking email');
+      if (eRow) return res.status(400).send('Email already exists');
+
+      db.run(`INSERT INTO users (username, email, password) VALUES (?, ?, ?)`, [username, email, password], function(err) {
+        if (err) {
+          console.error('Error inserting user:', err && err.message);
+          return res.status(500).send('Error saving user');
+        }
+        // set username cookie so subsequent pages can identify the user
+        res.setHeader('Set-Cookie', `username=${encodeURIComponent(username)}; Path=/; Max-Age=${7 * 24 * 60 * 60}`);
+        res.redirect('/home');
+      });
+    });
   });
 });
 
@@ -260,20 +269,49 @@ app.put('/api/settings', (req, res) => {
 
   params.push(currentUser);
   const sql = `UPDATE users SET ${updates.join(', ')} WHERE username = ?`;
-  db.run(sql, params, function(err) {
-    if (err) {
-      console.error('Error updating settings:', err.message);
-      if (err.message && err.message.includes('UNIQUE constraint failed')) {
-        return res.status(400).json({ message: 'Username or email already exists' });
+  // Before applying updates, check for username/email conflicts when changed
+  const checkAndUpdate = () => {
+    db.run(sql, params, function(err) {
+      if (err) {
+        console.error('Error updating settings:', err.message);
+        return res.status(500).json({ message: 'Error saving settings' });
       }
-      return res.status(500).json({ message: 'Error saving settings' });
-    }
-    // If username changed, update cookie so session continues under new name
-    if (username) {
-      res.setHeader('Set-Cookie', `username=${encodeURIComponent(username)}; Path=/; Max-Age=${7 * 24 * 60 * 60}`);
-    }
-    return res.json({ message: 'Settings saved' });
-  });
+      // If username changed, update cookie so session continues under new name
+      if (username) {
+        res.setHeader('Set-Cookie', `username=${encodeURIComponent(username)}; Path=/; Max-Age=${7 * 24 * 60 * 60}`);
+      }
+      return res.json({ message: 'Settings saved' });
+    });
+  };
+
+  // If username is changing to a different value, ensure it's not taken
+  if (username && username !== currentUser) {
+    db.get(`SELECT username FROM users WHERE username = ?`, [username], (uErr, uRow) => {
+      if (uErr) return res.status(500).json({ message: 'Error checking username' });
+      if (uRow) return res.status(400).json({ message: 'Username already exists' });
+
+      // If email is also changing, ensure new email isn't used by another account
+      if (email) {
+        db.get(`SELECT username FROM users WHERE email = ?`, [email], (eErr, eRow) => {
+          if (eErr) return res.status(500).json({ message: 'Error checking email' });
+          if (eRow && eRow.username !== currentUser) return res.status(400).json({ message: 'Email already exists' });
+          checkAndUpdate();
+        });
+      } else {
+        checkAndUpdate();
+      }
+    });
+  } else if (email) {
+    // Username not changing, but email is — ensure email isn't used by another user
+    db.get(`SELECT username FROM users WHERE email = ?`, [email], (eErr, eRow) => {
+      if (eErr) return res.status(500).json({ message: 'Error checking email' });
+      if (eRow && eRow.username !== currentUser) return res.status(400).json({ message: 'Email already exists' });
+      checkAndUpdate();
+    });
+  } else {
+    // No username/email conflict possible
+    checkAndUpdate();
+  }
 });
 
 // Save edits from edit.html into edit.db (insert or update)
