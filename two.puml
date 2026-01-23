@@ -1,0 +1,13 @@
+@startuml two
+actor Buyer
+participant "GAZIO Platform" as System
+participant Seller
+
+Buyer -> System: Search Gas Bottles
+System --> Buyer: Display listings
+
+Buyer -> System: Reserve Gas Bottle
+System -> Seller: Send reservation request
+Seller --> System: Reservation accepted
+System --> Buyer: Reservation confirmed
+@enduml

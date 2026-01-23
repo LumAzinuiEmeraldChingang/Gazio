@@ -1,0 +1,15 @@
+@startuml one.puml
+actor User
+participant "GAZIO Platform" as System
+participant "Authentication Service" as Auth
+
+User -> System: Register Account
+System -> Auth: Validate registration details
+Auth --> System: Registration success
+System --> User: Account created
+
+User -> System: Login
+System -> Auth: Authenticate credentials
+Auth --> System: Authentication success
+System --> User: Login successful
+@enduml

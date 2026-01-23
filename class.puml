@@ -1,0 +1,130 @@
+@startuml class.puml
+skinparam classAttributeIconSize 0
+
+' =====================
+' ENUMS
+' =====================
+enum UserRole {
+  BUYER
+  SELLER
+}
+
+enum ReservationStatus {
+  PENDING
+  SUCCESSFULL
+  CANCELLED
+}
+
+enum ListingStatus {
+  AVAILABLE
+  OUT OF STOCK
+}
+
+enum NotificationType {
+  STATUS_UPDATE
+}
+
+enum ChannelType {
+  IN_WEBSITE
+}
+
+' =====================
+' CORE CLASSES
+' =====================
+class User {
+  -userId: UUID
+  -name: String
+  -email: String
+  -username: String
+  -passwordHash: String
+  -role: UserRole
+  -isVerified: Boolean
+
+  +register()
+  +login()
+  +logout()
+}
+
+class Buyer {
+  +reserveBottle()
+  +viewReservations()
+  +receiveNotification()
+}
+
+class Seller {
+  +postListing()
+  +viewReservations()
+  +markReady()
+  +markCollected()
+}
+
+class Listing {
+  -listingId: UUID
+  -price: Decimal
+  -quantityAvailable: int
+  -location: String
+  -status: ListingStatus
+
+  +publish()
+  +update()
+  +deactivate()
+}
+
+class GasBottle {
+  -bottleId: UUID
+  -name: String
+  -size: String
+}
+
+class Reservation {
+  -reservationId: UUID
+  -quantity: int
+  -status: ReservationStatus
+  -createdAt: DateTime
+  -expiresAt: DateTime
+
+  +confirm()
+  +cancel()
+  +markCollected()
+}
+
+class Notification {
+  -notificationId: UUID
+  -type: NotificationType
+  -message: String
+  -channel: ChannelType
+  -sentAt: DateTime
+
+  +send()
+}
+
+class AuthService {
+  +authenticate()
+  +generateSessionToken()
+  +validateToken()
+}
+
+class Session {
+  -sessionId: UUID
+  -createdAt: DateTime
+  -expiresAt: DateTime
+}
+
+' =====================
+' INHERITANCE
+' =====================
+User <|-- Buyer
+User <|-- Seller
+
+' =====================
+' RELATIONSHIPS
+' =====================
+Buyer "1" --> "0..*" Reservation
+Seller "1" --> "0..*" Listing : posts
+Listing "1" --> "0..*" Reservation
+Listing "1" --> "1" GasBottle
+
+User "1" --> "0..*" Notification : receives
+AuthService --> Session
+
+@enduml

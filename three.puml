@@ -1,0 +1,13 @@
+@startuml three
+actor Buyer
+actor Seller
+participant "GAZIO Platform" as System
+participant "Notification Service" as Notify
+
+System -> Notify: Send reservation notification
+Notify --> Seller: Reservation notification
+
+Seller -> System: Update reservation status
+System -> Notify: Send status update
+Notify --> Buyer: Status update notification
+@enduml

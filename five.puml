@@ -1,0 +1,10 @@
+@startuml five
+actor Seller
+participant "GAZIO Platform" as System
+
+Seller -> System: Post Gas Bottle Listing
+System --> Seller: Listing published
+
+Seller -> System: Update Inventory
+System --> Seller: Inventory updated
+@enduml

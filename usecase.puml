@@ -1,0 +1,60 @@
+@startuml usecase.puml
+left to right direction
+
+actor Buyer
+actor Seller
+actor "Authentication Service" as Auth
+actor "Notification Service" as Notify
+
+rectangle "GAZIO Platform" {
+
+  (View Listings) as VL
+  (Search Gas Bottles) as SGB
+  (View Reservation Status) as VRS
+  (Receive Pickup Notification) as RPN
+  (Receive Status Updates) as RSU
+  (Reserve Gas Bottle) as RGB
+  (Login) as Login
+  (Register Account) as Register
+
+  (Post Gas Bottle Listing) as PGBL
+  (Mark Bottle as Ready) as MBR
+  (Mark Bottle as Collected) as MBC
+  (Receive Reservation Notification) as RRN
+  (View Reservations) as VR
+
+  (Send Buyer Confirmation) as SBC
+  (Notify Seller) as NS
+  (Update Inventory) as UI
+  (Update Reservation Status) as URS
+  (Validate Seller) as VS
+}
+
+Buyer --> VL
+Buyer --> SGB
+Buyer --> VRS
+Buyer --> RPN
+Buyer --> RSU
+Buyer --> RGB
+Buyer --> Login
+Buyer --> Register
+
+Seller --> PGBL
+Seller --> MBR
+Seller --> MBC
+Seller --> RRN
+Seller --> VR
+
+Auth --> Login
+Auth --> Register
+
+RGB --> SBC
+RGB --> NS
+RGB --> UI
+
+MBC --> URS
+PGBL --> VS
+
+Notify --> SBC
+Notify --> NS
+@enduml

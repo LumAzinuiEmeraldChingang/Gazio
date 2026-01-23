@@ -1,0 +1,11 @@
+@startuml four
+actor Buyer
+actor Seller
+participant "GAZIO Platform" as System
+participant "Notification Service" as Notify
+
+Seller -> System: Mark bottle as collected
+System -> Notify: Send pickup confirmation
+Notify --> Buyer: Pickup notification
+System --> Seller: Update inventory
+@enduml
